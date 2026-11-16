@@ -1,0 +1,11 @@
+{
+  "note": "On-device measurement used to choose the concept. Synthetic inputs from eval/data.js. Chrome 157 on an Apple M4 Mac, Firebase JS SDK 13.3.0 (@firebase/ai 3.1.0), InferenceMode.ONLY_ON_DEVICE, every response reported inferenceSource on_device.",
+  "started": "2026-11-15T07:00:34.538Z",
+  "finished": "2026-11-15T07:03:35.344Z",
+  "availability": { "textOnly": "available", "textAndImage": "available" },
+  "seal": { "n": 10, "documentsWithNoLeak_modelOnly": 7, "documentsWithNoLeak_patternsOnly": 0, "documentsWithNoLeak_combined": 7, "leaksCombined": ["rent: Priya, Raman", "debt: Hannah, Cho", "school: Marcus, Bell"], "validJson": 10, "stringsNotInDocument": 0, "medianMs": 6820, "maxMs": 23094 },
+  "ask": { "n": 10, "correct": 10, "medianMs": 1787 },
+  "plain": { "n": 10, "factsKept": 10, "wordsPerSentenceBefore": 24.5, "wordsPerSentenceAfter": 10.2, "medianMs": 1467, "maxLengthRatio": 1.37 },
+  "code": { "n": 20, "validJson": 20, "themeSetExact": 15, "themeSetScored": 18, "sentimentOk": 20, "safetyFlagOk": 20, "safetyFlagsRaisedAt": [7, 15], "gistsWithIdentifier": 0, "medianMs": 2135, "themeMisses": ["0: got VENUE+ORGANIZATION, want VENUE", "8: got SCHEDULE, want SCHEDULE+VENUE", "16: got NETWORKING, want none"] },
+  "match": { "n": 10, "correct": 8, "medianMs": 1773, "wrong": ["3: answered no; read South Korea as on the exclusion list", "7: answered no on a negated rule (government employees are not eligible)"] }
+}

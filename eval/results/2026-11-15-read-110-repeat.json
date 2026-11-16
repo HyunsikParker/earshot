@@ -1,0 +1,37 @@
+{
+  "note": "Three repeat runs of eval/read110.js in the user's Chrome 157 (Apple M4 Mac), collected from the page with window.__read.summarize() at 2026-11-15T21:13:53Z. Output limits and the 45-second on-device limit were in place. The page listed 58 identical device-timeout entries for run 3 (two attempts for each of answers 36 to 64); they are condensed into one entry here. Everything else is as the page reported it.",
+  "collectedAt": "2026-11-15T21:13:53.110Z",
+  "status": "finished",
+  "summary": {
+    "answers": 110,
+    "runs": 3,
+    "startedAt": "2026-11-15T16:24:29.474Z",
+    "finishedAt": "2026-11-15T18:00:17.712Z",
+    "lenientF1": { "min": 0.787, "mean": 0.881, "max": 0.936, "values": [0.921, 0.936, 0.787] },
+    "strictF1": { "min": 0.704, "mean": 0.768, "max": 0.804, "values": [0.796, 0.804, 0.704] },
+    "lenientPrecision": { "min": 0.898, "mean": 0.921, "max": 0.94, "values": [0.898, 0.926, 0.94] },
+    "lenientRecall": { "min": 0.677, "mean": 0.856, "max": 0.946, "values": [0.946, 0.946, 0.677] },
+    "toneAccuracy": { "min": 0.759, "mean": 0.904, "max": 0.981, "values": [0.981, 0.972, 0.759] },
+    "flagRecall": { "min": 0.857, "mean": 0.952, "max": 1, "values": [1, 1, 0.857] },
+    "flagPrecision": { "min": 1, "mean": 1, "max": 1, "values": [1, 1, 1] },
+    "gistLeaks": { "min": 0, "mean": 0, "max": 0, "values": [0, 0, 0] },
+    "unblockedLeaks": { "min": 0, "mean": 0, "max": 0, "values": [0, 0, 0] },
+    "gistsBlockedByGuard": { "min": 3, "mean": 13.667, "max": 32, "values": [6, 3, 32] },
+    "failedReadings": { "min": 0, "mean": 9.667, "max": 29, "values": [0, 0, 29] },
+    "medianMs": { "min": 6049, "mean": 9513.333, "max": 13786, "values": [6049, 8705, 13786] },
+    "maxMs": { "min": 23198, "mean": 48719.333, "max": 92190, "values": [23198, 30770, 92190] },
+    "sameThemeSetInEveryRun": 64,
+    "deviceErrors_condensed": { "run": 3, "answers": "36 to 64", "entries": 58, "code": "device-timeout", "message": "The local model could not finish this step: no answer after 45 seconds" },
+    "sources": ["on_device"]
+  },
+  "perRun": [
+    { "lenient": { "p": 0.898, "r": 0.946, "f1": 0.921 }, "strict": { "p": 0.688, "r": 0.946, "f1": 0.796 }, "counts": { "tp": 88, "fp": 10, "fpStrict": 40, "fn": 5 }, "tone": { "ok": 106, "n": 108, "accuracy": 0.981 }, "flag": { "tp": 7, "fp": 0, "fn": 0, "errors": [] }, "gist": { "withPlantedDetails": 18, "leaks": 0, "unblockedLeaks": 0, "blockedByGuard": 6 }, "failed": 0, "ms": { "median": 6049, "p90": 8529, "max": 23198, "total": 610120 }, "misses": ["1: +ORGANIZATION", "17: +SCHEDULE,CONTENT,VENUE,FOOD,NETWORKING,ORGANIZATION", "21: -SCHEDULE", "44: -VENUE", "75: -CONTENT", "82: +NETWORKING", "103: -ORGANIZATION", "105: -ORGANIZATION", "108: +CONTENT", "109: +NETWORKING"] },
+    { "lenient": { "p": 0.926, "r": 0.946, "f1": 0.936 }, "strict": { "p": 0.698, "r": 0.946, "f1": 0.804 }, "counts": { "tp": 88, "fp": 7, "fpStrict": 38, "fn": 5 }, "tone": { "ok": 105, "n": 108, "accuracy": 0.972 }, "flag": { "tp": 7, "fp": 0, "fn": 0, "errors": [] }, "gist": { "withPlantedDetails": 18, "leaks": 0, "unblockedLeaks": 0, "blockedByGuard": 3 }, "failed": 0, "ms": { "median": 8705, "p90": 26243, "max": 30770, "total": 1399342 }, "misses": ["1: +ORGANIZATION", "17: +SCHEDULE,CONTENT,ORGANIZATION", "21: -SCHEDULE", "44: -VENUE", "57: +CONTENT", "75: -CONTENT", "92: +NETWORKING", "96: +NETWORKING", "103: -ORGANIZATION", "105: -ORGANIZATION"] },
+    { "lenient": { "p": 0.94, "r": 0.677, "f1": 0.787 }, "strict": { "p": 0.733, "r": 0.677, "f1": 0.704 }, "counts": { "tp": 63, "fp": 4, "fpStrict": 23, "fn": 30 }, "tone": { "ok": 82, "n": 108, "accuracy": 0.759 }, "flag": { "tp": 6, "fp": 0, "fn": 1, "errors": ["39:missed"] }, "gist": { "withPlantedDetails": 18, "leaks": 0, "unblockedLeaks": 0, "blockedByGuard": 32 }, "failed": 29, "ms": { "median": 13786, "p90": 92059, "max": 92190, "total": 3738575 }, "misses": ["1: +ORGANIZATION", "2: +SCHEDULE", "17: +ORGANIZATION", "21: -SCHEDULE", "36: -ORGANIZATION", "37: -ORGANIZATION,VENUE", "38: -SCHEDULE", "40: -FOOD", "41: -VENUE", "42: -ORGANIZATION", "43: -VENUE", "44: -VENUE", "46: -ORGANIZATION", "47: -CONTENT", "48: -NETWORKING", "49: -FOOD", "50: -VENUE", "52: -CONTENT", "53: -ORGANIZATION", "54: -CONTENT", "55: -FOOD", "56: -NETWORKING", "58: -ORGANIZATION", "59: -NETWORKING", "60: -SCHEDULE", "61: -CONTENT", "62: -ORGANIZATION", "63: -VENUE", "64: -SCHEDULE", "75: -CONTENT", "96: +NETWORKING", "103: -ORGANIZATION", "105: -ORGANIZATION"] }
+  ],
+  "derived": {
+    "run_3_on_the_81_answers_it_read": "63 true positives, 4 false positives, 4 misses: precision 0.940, recall 0.940, F1 0.940. The other 29 answers (36 to 64) timed out twice each and count as unread.",
+    "all_four_runs_lenient_f1": [0.951, 0.921, 0.936, 0.787],
+    "runs_in_which_every_answer_was_read": { "lenient_f1": [0.951, 0.921, 0.936], "tone_correct_of_108": [106, 106, 105], "safety_flags_found_of_7": [7, 7, 7], "safety_false_alarms": [0, 0, 0], "planted_details_kept_in_a_gist_of_18": [0, 0, 0] }
+  }
+}

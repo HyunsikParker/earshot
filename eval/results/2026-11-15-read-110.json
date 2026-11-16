@@ -1,0 +1,33 @@
+{
+  "note": "Reading step on the 110 labelled synthetic answers in eval/answers110.js, through Firebase AI Logic in ONLY_ON_DEVICE mode. Chrome 157 on an Apple M4 Mac. Labels and scoring rules were fixed before the runs and are described at the top of answers110.js. Lenient scoring ignores themes listed as acceptable (may); strict scoring counts them as errors.",
+  "run_1": {
+    "started": "2026-11-15T11:28:07Z",
+    "build": "before output limits and the on-device time limit were added",
+    "answers": 110,
+    "sources": ["on_device"],
+    "themes_lenient": { "precision": 0.967, "recall": 0.935, "f1": 0.951 },
+    "themes_strict": { "precision": 0.737, "recall": 0.935, "f1": 0.825 },
+    "counts": { "tp": 87, "fp": 3, "fp_strict": 31, "fn": 6 },
+    "tone": { "correct": 106, "scored": 108, "accuracy": 0.981 },
+    "safety_flag": { "true_positive": 7, "false_positive": 0, "false_negative": 0 },
+    "gists": { "answers_with_planted_details": 18, "gists_keeping_a_planted_detail": 0, "of_those_not_blocked_by_the_guard": 0, "gists_the_guard_blocks_overall": 1 },
+    "failed_readings": 0,
+    "ms": { "median": 2322, "p90": 2768, "total": 260208 },
+    "theme_errors": ["17: +ORGANIZATION", "21: -SCHEDULE", "44: -VENUE", "51: +NETWORKING", "74: -ORGANIZATION", "75: -CONTENT", "82: +NETWORKING", "103: -ORGANIZATION", "105: -ORGANIZATION"]
+  },
+  "run_2_interrupted": {
+    "answers_read_before_stopping": 98,
+    "stalled_on_answer": 99,
+    "stalled_for": "about seven minutes, ending 2026-11-15T11:46:39Z",
+    "error": "The response exceeded output limits and was truncated.",
+    "consequence": "The harness stopped on the error, so this run has no scores. The app now caps output lengths in the schema, stops an on-device step after 45 seconds and carries on past an answer the model cannot finish."
+  },
+  "repeat_runs": "Started 2026-11-15T16:24:29Z with the limits in place. The machine was running another local model at the time and each answer took about 6.8 seconds. Results are to be added here; until then there is one complete run and no measure of run-to-run spread.",
+  "schema_limit_timing_check": {
+    "at": "2026-11-15T16:22Z to 16:24Z",
+    "ms_per_answer_without_limits": [[10694, 5391, 6568, 5844], [4938, 8486, 5900, 7293]],
+    "ms_per_answer_with_maxItems_and_maxLength": [[5429, 6036, 5788, 6055], [6715, 6742, 7095, 7930]],
+    "ms_per_answer_with_maxItems_only": [[8494, 6478, 6054, 6592]],
+    "reading": "No difference beyond the noise. The first batch without limits overlapped with earlier queued requests."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "earshot",
+  "version": "0.1.0",
+  "description": "Sorts confidential open-ended survey answers on your own computer with Gemini Nano; only the counts go to the cloud.",
+  "scripts": {
+    "build": "vite build",
+    "build:local": "vite build --mode development --outDir dist-local",
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
+    "firebase": "^13.3.0"
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.1",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  },
+  "private": true,
+  "type": "module"
+}

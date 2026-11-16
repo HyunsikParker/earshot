@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reading measurement</title>
+    <style>
+      body { font: 15px/1.5 system-ui, sans-serif; margin: 2rem; max-width: 46rem; }
+      button { font: inherit; padding: 0.5rem 1rem; }
+      #status { font-family: ui-monospace, monospace; margin-top: 1rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Reading measurement</h1>
+    <p>Reads 110 labelled synthetic answers three times with the local model, through Firebase AI Logic in <code>ONLY_ON_DEVICE</code> mode, and scores each run. Nothing is sent to a server.</p>
+    <button id="run" type="button">Run three times</button>
+    <p id="status">idle</p>
+    <script type="module" src="./read110.js"></script>
+  </body>
+</html>
