@@ -97,7 +97,7 @@ If the browser has no local model, the sample study offers labels recorded from 
 
 ## Status on 16 November 2026
 
-The on-device path has been run end to end in Chrome 157. The cloud path runs against a Firebase project on the Spark plan with the Gemini Developer API, and every cloud request carries an App Check token. On 16 November `gemini-3.5-flash-lite` wrote the report from the tally sheet in 2.4 to 7.3 seconds across three requests. `gemini-3.8-flash` returned an error once and timed out twice that day, so the report step uses the lighter model; the reason is noted in [`src/config/firebase-config.js`](src/config/firebase-config.js).
+The on-device path has been run end to end in Chrome 157. The cloud path runs against a Firebase project on the Spark plan with the Gemini Developer API, and every cloud request carries an App Check token. On 16 November `gemini-3.5-flash-lite` wrote the report from the tally sheet in 2.4 to 7.3 seconds across four requests, one of them from the hosted copy, where App Check used reCAPTCHA Enterprise. `gemini-3.8-flash` returned an error once and timed out twice that day, so the report step uses the lighter model; the reason is noted in [`src/config/firebase-config.js`](src/config/firebase-config.js).
 
 ## Built during the submission period
 
