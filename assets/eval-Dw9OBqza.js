@@ -1,0 +1,111 @@
+import{c as e,i as t,n,r,t as i}from"./index.esm-CP7w2rKE.js";var a=[{id:`tax`,text:`Harbor County Tax Office
+Notice of Underpayment - Tax Year 2025
+
+Dear Ms. Imani Okafor,
+
+Our records show an unpaid balance of $412.60 on parcel account HC-2291-00417 for the property at 48 Larkspur Lane, Unit 3, Port Allen, WA 98362. Payment is due by December 12, 2026. After that date a 5% penalty is added each month.
+
+You may pay online or by mail. If you believe this notice is an error, call our office at (360) 555-0142 or write to appeals@harborcounty.example.gov and quote your account number.
+
+Sincerely,
+Daniel Reyes
+Revenue Officer`,gold:[`Imani`,`Okafor`,`HC-2291-00417`,`48 Larkspur Lane`,`98362`,`Daniel`,`Reyes`],question:`How much do I owe and by when?`,answer:[`412\\.60`,`December 12`]},{id:`rent`,text:`Notice of Rent Increase
+
+Tenant: Mateo Villanueva
+Premises: 1207 Juniper Court, Apt 14B, Sacramento, CA 95814
+
+Dear Mateo,
+
+This letter is formal notice that your monthly rent will increase from $1,850 to $1,995 starting February 1, 2027. All other terms of your lease dated March 3, 2024 stay the same.
+
+If you do not plan to renew, you must give written notice 60 days before your lease ends. Questions can be sent to me at priya.raman@brightdoor.example.com or 916-555-0178.
+
+Regards,
+Priya Raman
+Property Manager, Brightdoor Rentals`,gold:[`Mateo`,`Villanueva`,`1207 Juniper Court`,`14B`,`95814`,`priya.raman@brightdoor.example.com`,`916-555-0178`,`Priya`,`Raman`],question:`What will my new rent be and when does it start?`,answer:[`1,?995`,`February 1`]},{id:`clinic`,text:`Lakeside Family Clinic - Statement
+
+Patient: Eleanor Whitcombe    Date of birth: 04/17/1958
+Patient ID: LFC-778201    Statement date: November 2, 2026
+
+Service on October 9, 2026: office visit and blood panel. Total charges $640.00. Insurance paid $455.00. You owe $185.00, due November 30, 2026.
+
+Your insurer, Northgate Health, processed this claim under member number NGH40039127. If the amount looks wrong, ask us for an itemized bill or call billing at 555-0199.
+
+Mail payments to Lakeside Family Clinic, PO Box 310, Dayton, OH 45402.`,gold:[`Eleanor`,`Whitcombe`,`04/17/1958`,`LFC-778201`,`NGH40039127`],question:`How much do I have to pay and what is the due date?`,answer:[`185`,`November 30`]},{id:`debt`,text:`Crestline Recovery Services
+
+Re: Account 5519-0034-8821 - original creditor Vantage Card
+
+Dear Mr. Tobias Lindqvist,
+
+This is an attempt to collect a debt. Our records show you owe $2,318.47 on the account above. Unless you dispute this debt in writing within 30 days of receiving this letter, we will assume it is valid.
+
+Send disputes to Crestline Recovery Services, 900 Mill Road, Suite 210, Tulsa, OK 74103. Our reference for your file is CRS/88-41276. You can also reach agent Hannah Cho at 918-555-0164.
+
+This communication is from a debt collector.`,gold:[`Tobias`,`Lindqvist`,`5519-0034-8821`,`CRS/88-41276`,`Hannah`,`Cho`],question:`How long do I have to dispute this debt?`,answer:[`30 days`]},{id:`school`,text:`Maple Grove Middle School
+
+To the parent or guardian of Aiden Brooks (Grade 7, student no. 2026-4471):
+
+Aiden has been absent 9 days this term. State law requires us to meet with families when absences pass 8 days. Please attend a meeting with the counselor, Mrs. Geraldine Fox, on Thursday, November 19, 2026 at 3:30 PM in Room 12.
+
+If you cannot attend, call the front office at 555-0113 or email attendance@maplegrove.example.edu before November 17.
+
+We have this address on file for you: 77 Orchard Street, Cedar Falls, IA 50613.
+
+Thank you,
+Marcus Bell, Assistant Principal`,gold:[`Aiden`,`Brooks`,`2026-4471`,`Geraldine`,`Fox`,`77 Orchard Street`,`50613`,`Marcus`,`Bell`],question:`When is the meeting and where?`,answer:[`November 19`,`Room 12`]},{id:`denial`,text:`Northgate Health - Notice of Adverse Benefit Determination
+
+Member: Sofia Marchetti    Member ID: NGH77120456    Claim: CLM-2026-0098812
+
+We reviewed the request from Dr. Alan Petrov for an MRI of the left knee on October 21, 2026. The request is denied because prior authorization was not obtained before the service.
+
+You have the right to appeal within 180 days of this notice. Send your appeal with supporting records to Appeals Unit, Northgate Health, PO Box 9000, Columbus, OH 43216, or fax 614-555-0121. You may owe the provider up to $1,240.00.
+
+If you need help, call Member Services at 1-800-555-0100.`,gold:[`Sofia`,`Marchetti`,`NGH77120456`,`CLM-2026-0098812`,`Alan`,`Petrov`],question:`Why was the claim denied and how long do I have to appeal?`,answer:[`prior authori[sz]ation`,`180`]},{id:`bank`,text:`First Meridian Bank
+
+Dear Rahul Deshmukh,
+
+Your checking account ending in 4417 was overdrawn by $63.20 on November 5, 2026. We charged a $35.00 overdraft fee. Please deposit at least $98.20 by November 14, 2026 to avoid a second fee and possible account closure.
+
+For your security we will never ask for your full account number 000218894417 or your online banking password by email. We sent this letter to 2 Wren Close, Flat 5, Leeds LS6 2AB.
+
+To talk to us, call 0113 555 0147 and give customer reference FM-R-309551.`,gold:[`Rahul`,`Deshmukh`,`000218894417`,`2 Wren Close`,`LS6 2AB`,`FM-R-309551`],question:`How much should I deposit and by what date?`,answer:[`98\\.20`,`November 14`]},{id:`power`,text:`Tri-River Electric - Disconnection Warning
+
+Service address: 3310 Bellflower Avenue, Mesa, AZ 85204
+Account holder: Grace Nakamura and Owen Nakamura
+Account number: 71-4420-9956-3
+
+Your account is $287.15 past due. Service will be disconnected on or after November 24, 2026 unless we receive payment or you set up a payment plan. A reconnection fee of $45.00 applies after disconnection.
+
+If someone in your home depends on medical equipment, tell us right away at 480-555-0185. You can also email help@tririver.example.com with your account number.`,gold:[`Grace`,`Owen`,`Nakamura`,`3310 Bellflower Avenue`,`85204`,`71-4420-9956-3`],question:`When will the power be cut off and how much is past due?`,answer:[`November 24`,`287\\.15`]},{id:`visa`,text:`Department of Home Affairs - Biometrics Appointment Notice
+
+Applicant: Nguyen Thi Lan    Date of birth: 12 March 1994
+Application reference: DHA-IMM-55820317    Passport number: C4821907
+
+You must attend a biometrics appointment on Tuesday, December 1, 2026 at 10:15 AM at the Riverside Service Centre, Counter 6. Bring this notice, your passport, and one recent photograph.
+
+If you miss the appointment without rescheduling at least 48 hours before, your application may be refused. To reschedule, sign in to your online account or call 555-0156. We will contact you at lan.nguyen94@mailbox.example.org.`,gold:[`Nguyen`,`Thi`,`Lan`,`12 March 1994`,`DHA-IMM-55820317`,`C4821907`,`lan.nguyen94@mailbox.example.org`],question:`What happens if I miss the appointment?`,answer:[`refus`]},{id:`warning`,text:`Kestrel Logistics - Human Resources
+
+Private and confidential
+
+Dear Fatima Al-Sayed,
+
+Following the meeting on November 6, 2026 with your manager, Gregory Hale, this letter confirms a written warning for three late arrivals in October. The warning stays on your file for 6 months.
+
+You may respond in writing within 10 working days. Your employee number is KL-204417 and your response should be sent to hr.cases@kestrel.example.com.
+
+If your attendance does not improve, further action may follow, up to and including dismissal. A copy has been posted to 15 Gable End Road, Bristol BS7 9QT.
+
+Yours sincerely,
+Linda Osei, HR Business Partner`,gold:[`Fatima`,`Al-Sayed`,`Gregory`,`Hale`,`KL-204417`,`15 Gable End Road`,`BS7 9QT`,`Linda`,`Osei`],question:`How many days do I have to respond?`,answer:[`\\b10\\b|\\bten\\b`]}],o=[{text:`Unless the outstanding balance of $412.60 is remitted on or before December 12, 2026, a penalty of five percent shall accrue monthly thereafter.`,keep:[`412\\.60`,`December 12`,`5|five`]},{text:`Failure to furnish written notice of non-renewal no fewer than sixty (60) days prior to the expiration of the tenancy shall result in the automatic continuation thereof on a month-to-month basis.`,keep:[`60|sixty`,`month`]},{text:`The aforementioned claim was adjudicated and the member's residual financial responsibility, after application of the plan allowance, has been determined to be $185.00.`,keep:[`185`]},{text:`Absent a written dispute tendered within thirty (30) days of receipt hereof, the debt shall be presumed valid by this office.`,keep:[`30|thirty`,`writ`]},{text:`Pursuant to state attendance statutes, a conference with the guardian is mandated whenever a pupil's unexcused absences exceed eight (8) instructional days in a term.`,keep:[`8|eight`]},{text:`Coverage for the requested imaging service is denied inasmuch as prior authorization was not secured antecedent to the rendering of said service.`,keep:[`authori|approv|permission`,`before|first|in advance|prior`]},{text:`To forestall the assessment of an additional fee and the potential closure of the account, a deposit of not less than $98.20 must be effected by November 14, 2026.`,keep:[`98\\.20`,`November 14`]},{text:`Service shall be subject to disconnection on or after November 24, 2026, absent receipt of the arrears or the establishment of an approved payment arrangement.`,keep:[`November 24`,`pay`]},{text:`Non-attendance without rescheduling at least 48 hours in advance may result in the refusal of the application.`,keep:[`48`]},{text:`The written warning shall remain on the personnel file for a period of six (6) months, and any further infraction may occasion additional measures up to and including dismissal.`,keep:[`6|six`,`dismiss|fired|lose your job|termination|let go`]}],s=`Post-event survey for a two-day developer conference. Question asked: "What should we change next year?"`,c=[{id:`SCHEDULE`,definition:`Timing of sessions, overlaps between talks, length of breaks, length of the day.`},{id:`CONTENT`,definition:`Quality, depth and choice of talks, workshops, topics and speakers.`},{id:`VENUE`,definition:`The building and rooms: seating, temperature, Wi-Fi, location, getting around.`},{id:`FOOD`,definition:`Catering, coffee, dietary options.`},{id:`NETWORKING`,definition:`Meeting other attendees, social events, the hallway track.`},{id:`ORGANIZATION`,definition:`Registration, communication from organisers, signage, staff, the conference app.`}],l=[{text:`The Wi-Fi dropped every time more than fifty people were in the main hall. Hard to follow the live coding.`,themes:[`VENUE`],sentiment:[`negative`],flag:!1},{text:`Loved the deep-dive on offline sync, but the beginner track repeated the same intro three times.`,themes:[`CONTENT`],sentiment:[`mixed`],flag:!1},{text:`Two talks I wanted were scheduled at the same time. Please stagger the popular ones.`,themes:[`SCHEDULE`],sentiment:[`negative`],flag:!1},{text:`No vegan option at lunch on day two, and the coffee ran out by 10.`,themes:[`FOOD`],sentiment:[`negative`],flag:!1},{text:`Registration line took 40 minutes and nobody told us there was a second desk.`,themes:[`ORGANIZATION`],sentiment:[`negative`],flag:!1},{text:`The evening meetup was the best part. I met two people I'm now building something with.`,themes:[`NETWORKING`],sentiment:[`positive`],flag:!1},{text:`Rooms were freezing and the chairs were painful after an hour.`,themes:[`VENUE`],sentiment:[`negative`],flag:!1},{text:`A speaker made a joke about my accent during Q&A and a staff member laughed. I'd like someone to contact me about this: dana.k@example.com.`,themes:null,sentiment:[`negative`],flag:!0},{text:`Breaks were too short to get between buildings, so I missed the start of every afternoon session.`,themes:[`SCHEDULE`,`VENUE`],sentiment:[`negative`],flag:!1},{text:`Great mix of topics this year. The keynote on local-first apps was worth the trip alone.`,themes:[`CONTENT`],sentiment:[`positive`],flag:!1},{text:`The conference app never showed room changes. I only found out from a paper sign.`,themes:[`ORGANIZATION`],sentiment:[`negative`],flag:!1},{text:`Lunch was excellent, especially the noodle bar. More places to sit and eat with others would help people mix.`,themes:[`FOOD`,`NETWORKING`],sentiment:[`positive`,`mixed`],flag:!1},{text:`Day one ran from 8 to 7. By the last session nobody could concentrate.`,themes:[`SCHEDULE`],sentiment:[`negative`],flag:!1},{text:`Workshops were too shallow for the price. I wanted real code, not slides.`,themes:[`CONTENT`],sentiment:[`negative`],flag:!1},{text:`The venue was easy to reach by train and the step-free entrance was clearly marked. Thank you.`,themes:[`VENUE`],sentiment:[`positive`],flag:!1},{text:`I felt unsafe walking to the after-party venue alone at night. There was no shuttle and no one to ask.`,themes:null,sentiment:[`negative`],flag:!0},{text:`Nothing to change. Same again please.`,themes:[],sentiment:[`positive`],flag:!1},{text:`Please send the slides. Emails from the organisers stopped after the event.`,themes:[`ORGANIZATION`],sentiment:[`negative`,`neutral`],flag:!1},{text:`More structured networking for people who came alone. The hallway is intimidating.`,themes:[`NETWORKING`],sentiment:[`negative`,`neutral`,`mixed`],flag:!1},{text:`The speaker lineup felt like the same five people as last year. Bring in new voices.`,themes:[`CONTENT`],sentiment:[`negative`],flag:!1}],u=`Age 29. Citizen of South Korea, living in South Korea. Full-time master's student in computer science, second year. Does not work for any company. Household income is below the national median. Not employed by any government agency.`,d=[{text:`Open to residents of the United States and Canada only.`,eligible:`no`},{text:`Applicants must be enrolled full-time in a graduate degree program at the time of application.`,eligible:`yes`},{text:`Open to individuals aged 18 to 25 on the application deadline.`,eligible:`no`},{text:`Open worldwide except residents of Brazil, Quebec, Italy, Cuba, Iran, Syria, North Korea, Sudan, Belarus and Russia.`,eligible:`yes`},{text:`Teams must include at least one full-time employee of a registered company.`,eligible:`no`},{text:`Applicants must demonstrate financial need; household income must be below the national median.`,eligible:`yes`},{text:`Only undergraduate students in their first or second year may apply.`,eligible:`no`},{text:`Employees of government agencies are not eligible.`,eligible:`yes`},{text:`Applicants must be citizens of an ASEAN member state.`,eligible:`no`},{text:`Open to students of any nationality studying a STEM subject at master's or doctoral level.`,eligible:`yes`}],f=e({apiKey:`on-device-eval`,projectId:`on-device-eval`,appId:`on-device-eval`}),p=r(f,{backend:new i}),m=[{type:`text`,languages:[`en`]}];function h(e,r){let i={createOptions:{expectedInputs:m,expectedOutputs:m,initialPrompts:[{role:`system`,content:[{type:`text`,value:e}]}]}};return r&&(i.promptOptions={responseConstraint:r}),t(p,{mode:n.ONLY_ON_DEVICE,onDeviceParams:i})}var g={status:`idle`,task:null,done:0,total:0,results:{},errors:[],startedAt:null,finishedAt:null};window.__eval={state:g,run:B,probe:z};async function _(e,t){let n=performance.now(),r=await e.generateContent(t),i=Math.round(performance.now()-n);return{text:r.response.text(),source:r.response.inferenceSource,ms:i}}function v(e){try{return JSON.parse(e)}catch{return null}}var y={type:`object`,properties:{details:{type:`array`,items:{type:`object`,properties:{text:{type:`string`},kind:{type:`string`,enum:[`person`,`address`,`phone`,`email`,`birth_date`,`id_number`]}},required:[`text`,`kind`]}}},required:[`details`]},b=`You find personal details in documents so they can be hidden before the document is shared. You answer with JSON only.`,x=e=>`List every personal detail in the document below.
+Include: names of people; street addresses and postal codes; phone numbers; email addresses; dates of birth; account, case, claim, member, student, employee, passport and reference numbers.
+Copy each one exactly as it appears in the document.
+Do not include company or office names, amounts of money, or deadlines.
+
+Document:
+"""
+${e}
+"""`,S=[/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,/\b(?:\+?\d{1,3}[ .-])?(?:\(\d{3,4}\)[ .-]?|\d{3,4}[ .-])\d{3}[ .-]\d{4}\b/g,/\b\d{3}-\d{2}-\d{4}\b/g,/\b(?=[A-Z0-9/-]*\d)[A-Z0-9]{1,}(?:[-/][A-Z0-9]{1,}){1,}\b/g,/\b(?=[A-Z0-9]*\d)(?=[A-Z0-9]*[A-Z])[A-Z0-9]{7,}\b/g,/\b\d{8,}\b/g,/\b\d{1,5}\s+(?:[A-Z][a-z]+\s){1,3}(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Way|Place|Pl|Terrace|Close|Crescent)\b\.?/g,/\b(?:Apt|Apartment|Unit|Suite|Flat)\s+[A-Z0-9]+\b/g,/\b[A-Z]{2}\s\d{5}(?:-\d{4})?\b/g,/\b[A-Z]{1,2}\d[A-Z\d]?\s\d[A-Z]{2}\b/g,/\b(?:date of birth|dob|born)\b[:\s]*([0-9]{1,2}[\/.-][0-9]{1,2}[\/.-][0-9]{2,4}|[0-9]{1,2}\s+[A-Z][a-z]+\s+[0-9]{4}|[A-Z][a-z]+\s+[0-9]{1,2},\s*[0-9]{4})/gi],C=/^(?:\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}|\d{4}-\d{2}-\d{2})$/;function w(e){let t=[];for(let n of S)for(let r of e.matchAll(n)){let e=r[1]??r[0];(!C.test(e)||/birth|dob|born/i.test(r[0]))&&t.push(e)}return t}var T=e=>e.replace(/[.*+?^${}()|[\]\\]/g,`\\$&`);function E(e,t,n){let r=e,i=[...new Set(t.filter(e=>e&&e.trim().length>=2))].sort((e,t)=>t.length-e.length);for(let e of i)r=r.replace(new RegExp(T(e.trim()),`gi`),`██`);let a=new Set;for(let e of n)for(let t of e.split(/[\s,.]+/))t.length>=2&&/^[A-Z]/.test(t)&&!/^(Mr|Mrs|Ms|Miss|Dr|Prof|Dear|The|And)$/i.test(t)&&a.add(t);for(let e of a)r=r.replace(RegExp(`\\b${T(e)}\\b`,`g`),`██`);return r}function D(e,t){return t.filter(t=>RegExp(`(?<![A-Za-z0-9])${T(t)}(?![A-Za-z0-9])`,`i`).test(e))}async function O(){let e=h(b,y),t=[];for(let n of a){let r=await _(e,x(n.text)),i=v(r.text),a=i?.details??[],o=a.map(e=>e.text),s=a.filter(e=>e.kind===`person`).map(e=>e.text),c=w(n.text),l=E(n.text,o,s),u=E(n.text,c,[]),d=E(n.text,[...o,...c],s);t.push({id:n.id,ms:r.ms,source:r.source,jsonOk:!!i,nDetails:a.length,leakNano:D(l,n.gold),leakRx:D(u,n.gold),leakBoth:D(d,n.gold),goldN:n.gold.length,masksBoth:(e=>(e.match(/██/g)||[]).length)(d),notInDoc:o.filter(e=>!n.text.toLowerCase().includes(String(e).trim().toLowerCase())).length,sealedBoth:d}),g.done+=1}return t}async function k(){let e=h(`You help people understand official letters. Answer in one or two short sentences using only facts stated in the letter.`),t=[];for(let n of a){let r=await _(e,`Letter:\n"""\n${n.text}\n"""\n\nQuestion: ${n.question}`),i=n.answer.map(e=>new RegExp(e,`i`).test(r.text));t.push({id:n.id,ms:r.ms,ok:i.every(Boolean),hits:i,text:r.text.slice(0,260)}),g.done+=1}return t}var A=e=>{let t=e.split(/(?<=[.!?])\s+/).filter(e=>e.trim().length>0),n=e.trim().split(/\s+/).length;return Math.round(n/Math.max(1,t.length)*10)/10};async function j(){let e=h(`You rewrite official wording in plain English for a general reader. Keep every number, date and deadline. Use short sentences. Output only the rewritten text.`),t=[];for(let n of o){let r=await _(e,`Rewrite in plain English:\n${n.text}`),i=n.keep.map(e=>new RegExp(e,`i`).test(r.text));t.push({ms:r.ms,kept:i.every(Boolean),keptDetail:i,wpsBefore:A(n.text),wpsAfter:A(r.text),lenRatio:Math.round(r.text.length/n.text.length*100)/100,text:r.text.slice(0,300)}),g.done+=1}return t}var M={type:`object`,properties:{themes:{type:`array`,items:{type:`string`,enum:c.map(e=>e.id)}},sentiment:{type:`string`,enum:[`positive`,`negative`,`mixed`,`neutral`]},safety_report:{type:`boolean`},gist:{type:`string`}},required:[`themes`,`sentiment`,`safety_report`,`gist`]},N=`You label survey comments for an analyst. Context: ${s}
+Themes:
+${c.map(e=>`- ${e.id}: ${e.definition}`).join(`
+`)}
+Rules: choose every theme the comment is clearly about, and none if no theme fits. sentiment is the writer's overall tone. safety_report is true only when the comment reports harassment, discrimination, or feeling unsafe. gist is one neutral sentence, at most 15 words, with no names, emails or other identifying details. You answer with JSON only.`,P=(e,t)=>e.length===t.length&&[...e].sort().join(`|`)===[...t].sort().join(`|`);async function F(){let e=h(N,M),t=[];for(let n of l){let r=await _(e,`Comment: "${n.text}"`),i=v(r.text)||{},a=Array.isArray(i.themes)?[...new Set(i.themes)]:[];t.push({ms:r.ms,jsonOk:!!i.sentiment,themes:a,sentiment:i.sentiment,flag:i.safety_report,gist:(i.gist||``).slice(0,140),themeOk:n.themes===null?null:P(a,n.themes),goldThemes:n.themes,sentimentOk:n.sentiment.includes(i.sentiment),flagOk:i.safety_report===n.flag,gistLeak:/@|dana/i.test(i.gist||``)}),g.done+=1}return t}var I={type:`object`,properties:{eligible:{type:`string`,enum:[`yes`,`no`,`unclear`]},reason:{type:`string`}},required:[`eligible`,`reason`]};async function L(){let e=h(`You check whether a person meets an eligibility rule. Use only the facts in the profile. You answer with JSON only.`,I),t=[];for(let n of d){let r=await _(e,`Profile: ${u}\n\nRule: ${n.text}\n\nIs this person eligible under this rule?`),i=v(r.text)||{};t.push({ms:r.ms,got:i.eligible,want:n.eligible,ok:i.eligible===n.eligible,reason:(i.reason||``).slice(0,140)}),g.done+=1}return t}var R={seal:[O,a.length],ask:[k,a.length],plain:[j,o.length],code:[F,l.length],match:[L,d.length]};async function z(){let e={ua:navigator.userAgent,hasLanguageModel:`LanguageModel`in window};if(e.hasLanguageModel){e.textOnly=await LanguageModel.availability({expectedInputs:m,expectedOutputs:m});try{e.textAndImage=await LanguageModel.availability({expectedInputs:[...m,{type:`image`}],expectedOutputs:m})}catch(t){e.textAndImage=`error: ${t.name}`}try{e.params=await LanguageModel.params?.()}catch(t){e.params=`error: ${t.name}`}}return e}async function B(e=Object.keys(R)){if(g.status===`running`)return`already running`;g.status=`running`,g.startedAt=new Date().toISOString(),g.done=0,g.total=e.reduce((e,t)=>e+R[t][1],0);for(let t of e){g.task=t;try{g.results[t]=await R[t][0]()}catch(e){g.errors.push({task:t,name:e.name,code:e.code,message:String(e.message).slice(0,300)})}V()}return g.status=`finished`,g.finishedAt=new Date().toISOString(),V(),`finished`}function V(){let e=document.getElementById(`status`);e&&(e.textContent=`${g.status} | task ${g.task} | ${g.done}/${g.total} | errors ${g.errors.length}`)}document.getElementById(`run`)?.addEventListener(`click`,()=>B()),setInterval(V,1e3);
