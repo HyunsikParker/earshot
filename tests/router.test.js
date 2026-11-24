@@ -177,6 +177,27 @@ describe('writing the report (cloud, with a device variant)', () => {
     expect(sleep.mock.calls.map((c) => c[0])).toEqual([800, 2400]);
   });
 
+  it('makes only one alternate request after an interrupted report stream', async () => {
+    const cloud = vi.fn()
+      .mockRejectedValueOnce(aiError('parse-failed'))
+      .mockRejectedValueOnce(aiError('fetch-error', 503));
+    const { router, sdk, sleep } = setup({ sdk: { cloud } });
+    const onStreamRetry = vi.fn();
+    const out = await router.run('report', { prompt: 'sheet', onChunk: vi.fn(), deviceOnChunk: null, onStreamRetry });
+    expect(out).toMatchObject({ source: 'on_device', attempts: 2, fallback: { from: 'cloud', reason: 'unavailable' } });
+    expect(sdk.calls.params.slice(0, 2).map((params) => params.inCloudParams.model)).toEqual([MODELS.writing, MODELS.writingFallback]);
+    expect(cloud).toHaveBeenCalledTimes(2);
+    expect(sleep).toHaveBeenCalledTimes(1);
+    expect(onStreamRetry).toHaveBeenCalledOnce();
+  });
+
+  it('does not report a successful cloud write when the response has no report text', async () => {
+    const { router, sdk } = setup({ env: { device: 'unavailable' }, sdk: { cloud: () => ' \n' } });
+    await expect(router.run('report', { prompt: 'sheet', onChunk: vi.fn() }))
+      .rejects.toMatchObject({ code: 'no-path', detail: { cloud: 'incomplete-response' } });
+    expect(sdk.calls.cloud).toBe(1);
+  });
+
   it('gives up after the retries and writes on the device with the device prompt', async () => {
     const { router, sdk, sleep } = setup({ sdk: { cloud: () => { throw aiError('fetch-error', 429); } } });
     const out = await router.run('report', { prompt: 'cloud prompt', devicePrompt: 'device prompt', system: 'cloud system', deviceSystem: 'device system' });

@@ -49,8 +49,8 @@ const router = createRouter({
   log(entry) {
     console.info('[earshot]', entry.route, entry.mode, '->', entry.source ?? `failed (${entry.error})`, entry.fallback ? `fallback: ${entry.fallback.reason}` : '', `${entry.ms} ms`);
     if (entry.route === 'read' || !state.study) return;
-    const { route, label, mode, source, ms, fallback, error, at } = entry;
-    state.study.steps = [...(state.study.steps ?? []), { route, label, mode, source, ms, fallback, error, at }].slice(-40);
+    const { route, label, mode, source, ms, fallback, error, cloudError, at } = entry;
+    state.study.steps = [...(state.study.steps ?? []), { route, label, mode, source, ms, fallback, error, cloudError, at }].slice(-40);
     renderAudit();
   },
 });
@@ -63,6 +63,7 @@ const WHY = {
   quota: 'the cloud model reached its limit',
   blocked: 'the cloud refused the request',
   unavailable: 'the cloud model was unavailable',
+  'incomplete-response': 'the cloud did not return a complete response',
   network: 'the cloud could not be reached',
   'cloud-error': 'the cloud could not finish',
   'device-unavailable': 'this browser has no local model',
@@ -548,7 +549,10 @@ function renderReport() {
   const restore = rememberFocus(el);
   const r = state.study.report;
   if (state.report.busy) {
-    el.innerHTML = `<h2>Report</h2><div class="report__body" aria-live="polite">${state.report.live ? renderMarkdown(state.report.live) : '<p class="hint">Writing.</p>'}</div>`;
+    const progress = state.report.live
+      ? renderMarkdown(state.report.live)
+      : `<p class="hint">${esc(state.report.hint ?? 'Writing.')}</p>`;
+    el.innerHTML = `<h2>Report</h2><div class="report__body" aria-live="polite">${progress}</div>`;
   } else if (r) {
     el.innerHTML = `
       <h2>Report</h2>
@@ -578,7 +582,9 @@ function renderAudit() {
     lines.push(`<li>${plural(read.length - recorded - inCloud, 'answer')} read on this computer, ${inCloud} in the cloud<br /><code>${state.study.confidential ? 'only_on_device' : 'prefer_on_device'}</code></li>`);
   }
   for (const step of state.study.steps ?? []) {
-    const outcome = step.error ? `no model ran, because ${esc(WHY[step.error] ?? 'of an error')}` : `${place(step.source)}${step.fallback ? `, because ${esc(WHY[step.fallback.reason] ?? 'the other path was not available')}` : ''}`;
+    const outcome = step.error
+      ? `did not finish, because ${esc(WHY[step.cloudError ?? step.error] ?? 'of an error')}`
+      : `${place(step.source)}${step.fallback ? `, because ${esc(WHY[step.fallback.reason] ?? 'the other path was not available')}` : ''}`;
     lines.push(`<li>${esc(step.label)}: ${outcome}<br /><code>${esc(step.mode)}</code> <span class="hint">${(step.ms / 1000).toFixed(1)} s</span></li>`);
   }
   el.innerHTML = `<summary>Where each step ran</summary>${lines.length ? `<ol>${lines.join('')}</ol>` : '<p class="hint">Nothing has run yet.</p>'}`;
@@ -645,7 +651,9 @@ async function writeReport() {
     state.report.problem = error.message;
     return renderSheetBlock();
   }
-  state.report = { busy: true, live: '', problem: '' };
+  const pending = { busy: true, live: '', problem: '' };
+  state.report = pending;
+  const isCurrent = () => state.study === s && state.report === pending;
   renderSheetBlock();
   renderReport();
   const facts = sheetFacts(sheet);
@@ -662,24 +670,33 @@ async function writeReport() {
       deviceSchema: pickSchema(facts),
       deviceOnChunk: null,
       onChunk(piece, all) {
-        state.report.live = all;
+        if (!isCurrent()) return;
+        pending.live = all;
+        renderReport();
+      },
+      onStreamRetry() {
+        if (!isCurrent()) return;
+        pending.live = '';
+        pending.hint = 'The cloud response ended early. Trying another cloud model.';
         renderReport();
       },
     });
+    if (!isCurrent()) return;
     const text = out.source === 'on_device' ? fallbackReport(sheet, parsePicks(out.text, facts)) : out.text.trim();
     s.report = { text, counts, source: out.source, reason: out.fallback?.reason ?? null, at: out.at, shortened: null };
     persistNow();
   } catch (error) {
+    if (!isCurrent()) return;
     if (error?.code === 'no-path') {
       // No model at all. The page can still state what the counts say.
       s.report = { text: fallbackReport(sheet), counts, source: 'page', reason: error.detail?.cloud ?? null, at: new Date().toISOString(), shortened: null };
       persistNow();
     } else {
-      state.report.problem = explain(error);
+      pending.problem = explain(error);
     }
   }
-  state.report.busy = false;
-  state.report.live = '';
+  pending.busy = false;
+  pending.live = '';
   renderSheetBlock();
   renderReport();
 }

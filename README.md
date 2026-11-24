@@ -22,7 +22,7 @@ Every inference call goes through the Firebase AI Logic SDK (`firebase/ai`). The
 | Read an answer | The answers | `ONLY_ON_DEVICE` for a confidential study, `PREFER_ON_DEVICE` otherwise | On the device. For a confidential study the SDK throws when there is no local model, so a missing model cannot turn into an upload. A study you mark as not confidential is read in the cloud when the device cannot read it. |
 | Find themes in a sample of answers | The question and up to 12 answers | Same as reading | Same as reading |
 | Suggest themes from the question | The question and any survey context you typed | `PREFER_IN_CLOUD` | In the cloud. The SDK falls back to the device when the cloud fails. |
-| Write the report | The tally sheet | `ONLY_IN_CLOUD`, then the device | In the cloud. A 429 gets one retry on another free-tier model; a 503 gets up to two retries with backoff. If that fails, the app records why and falls back locally. |
+| Write the report | The tally sheet | `ONLY_IN_CLOUD`, then the device | In the cloud. A 429 or an unreadable stream gets one retry on another free-tier model; an ordinary 503 gets up to two retries with backoff. If that fails, the app records why and falls back locally. |
 | Shorten the report | The report | `PREFER_ON_DEVICE` | On the device. The cloud takes over when there is no local model. |
 
 Other details:
@@ -57,7 +57,7 @@ Under a finished report, `findUnsupported()` checks the numbers and flags compar
 
 ## Free-tier limits
 
-Report writing uses `gemini-3.5-flash-lite`, separate from the other cloud steps on `gemini-3.8-flash`. A report that receives HTTP 429 retries once on `gemini-4-hydrogen`. All three are listed as not requiring billing in the Firebase AI Logic model list used for this project. Project-wide free-tier limits still apply.
+Report writing uses `gemini-3.5-flash-lite`, separate from the other cloud steps on `gemini-3.8-flash`. HTTP 429 and a stream the SDK cannot parse can switch the report to `gemini-4-hydrogen` once. After a stream failure, the app clears the partial text, shows that it is trying again, and asks for the replacement in a single response. All three models are listed as not requiring billing. Project-wide free-tier limits still apply.
 
 On the GitHub Pages demo, this build allows **five cloud reading requests per browser per UTC day** for non-confidential studies. Answer reads and theme discovery from a sample share that limit. Each request uses a slot before it is sent, even if it fails. Tabs in the same browser storage share the counter; if it cannot be stored, the app does not send the request. This is a browser limit, not a project-wide quota increase or server-side cap. Local runs, recorded labels and report writing do not use the five slots.
 

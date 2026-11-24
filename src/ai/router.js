@@ -24,6 +24,7 @@ export function classifyCloudError(error, online = true) {
     return 'cloud-error';
   }
   if (error?.code === 'api-not-enabled') return 'blocked';
+  if (error?.code === 'parse-failed' || error?.code === 'incomplete-response') return 'incomplete-response';
   if (error?.code === 'error') return 'network';
   return 'cloud-error';
 }
@@ -95,6 +96,9 @@ export function createRouter({ sdk, env, cloudModels, reserveCloudRead, log = ()
       return { text: result.response.text(), source: result.response.inferenceSource };
     }
     const result = await entry.model.generateContentStream(request, cancel);
+    // Both branches parse the same stream. If iteration fails, the aggregate
+    // can reject as well, before we reach the await below.
+    result.response.catch(() => {});
     let text = '';
     for await (const chunk of result.stream) {
       const piece = chunk.text();
@@ -141,7 +145,10 @@ export function createRouter({ sdk, env, cloudModels, reserveCloudRead, log = ()
   async function run(routeName, options = {}) {
     const route = ROUTES[routeName];
     if (!route) throw new Error(`Unknown route: ${routeName}`);
-    const { prompt, devicePrompt = prompt, system, deviceSystem = system, schema, deviceSchema = schema, confidential = true, onChunk, deviceOnChunk = onChunk } = options;
+    const {
+      prompt, devicePrompt = prompt, system, deviceSystem = system, schema, deviceSchema = schema,
+      confidential = true, onChunk, deviceOnChunk = onChunk, onStreamRetry,
+    } = options;
     const mode = modeFor(route.data, { confidential });
     const started = now();
     const device = await env.deviceAvailability();
@@ -158,7 +165,7 @@ export function createRouter({ sdk, env, cloudModels, reserveCloudRead, log = ()
       return { ...entry, text: out.text };
     };
     const fail = (code, message, detail) => {
-      log({ ...base, source: null, ms: now() - started, error: code, at: new Date(now()).toISOString() });
+      log({ ...base, source: null, ms: now() - started, error: code, cloudError: detail?.cloud, at: new Date(now()).toISOString() });
       throw new RouteError(code, message, detail);
     };
     const onDevice = async (extra) => {
@@ -220,26 +227,37 @@ export function createRouter({ sdk, env, cloudModels, reserveCloudRead, log = ()
       return onDevice({ fallback: { from: 'cloud', reason: cloudDown } });
     }
 
-    // ONLY_IN_CLOUD: retry quota once on a different model and keep the
-    // existing backoff for temporary service failures.
-    const alternateModel = cloudModels[route.quotaFallbackModel];
+    // ONLY_IN_CLOUD: a quota error or a broken report stream can switch models
+    // once. Keep the normal backoff for HTTP 503.
+    const alternateModel = cloudModels[route.retryCloudModel];
     let cloudSpec = spec;
+    let retryingBrokenStream = false;
     let serviceRetries = 0;
     let reason = cloudUsable ? null : cloudDown;
     let attempts = 0;
     while (cloudUsable) {
       attempts += 1;
       try {
-        const out = await invoke(mode, cloudSpec, prompt, onChunk);
+        const out = await invoke(mode, cloudSpec, prompt, retryingBrokenStream ? null : onChunk);
+        if (routeName === 'report' && !out.text.trim()) {
+          throw new RouteError('incomplete-response', 'The cloud did not return report text.');
+        }
         return finish({ ...out, source: out.source ?? 'in_cloud' }, { attempts });
       } catch (error) {
         const status = error?.code === 'fetch-error' ? error.customErrorData?.status : null;
-        if (status === 429 && cloudSpec === spec && alternateModel && alternateModel !== spec.cloudModel && env.online()) {
+        const brokenStream = routeName === 'report' && onChunk && error?.code === 'parse-failed';
+        if ((status === 429 || brokenStream) && cloudSpec === spec && alternateModel && alternateModel !== spec.cloudModel && env.online()) {
           cloudSpec = { ...spec, cloudModel: alternateModel };
+          if (brokenStream) {
+            // A terminal server error after an HTTP 200 can leave partial
+            // text in the stream. Ask for one complete response instead.
+            retryingBrokenStream = true;
+            onStreamRetry?.();
+          }
           await sleep(retryDelays[0] ?? 0);
           continue;
         }
-        if (status === 503 && serviceRetries < retryDelays.length && env.online()) {
+        if (status === 503 && !retryingBrokenStream && serviceRetries < retryDelays.length && env.online()) {
           await sleep(retryDelays[serviceRetries]);
           serviceRetries += 1;
           continue;

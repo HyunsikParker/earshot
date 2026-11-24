@@ -1,4 +1,6 @@
 import { afterEach, expect, it, vi } from 'vitest';
+import { deleteApp, initializeApp } from 'firebase/app';
+import { getAI, getGenerativeModel, GoogleAIBackend } from '../node_modules/@firebase/ai/dist/esm/index.esm.js';
 import { getSdk } from '../src/ai/firebase.js';
 import { sampleStudy } from '../src/sample/conference.js';
 import { loadStudy, saveStudy } from '../src/store.js';
@@ -93,10 +95,52 @@ it.each([
   expect(sdk.calls.cloud).toBe(1);
 });
 
+it('replaces an interrupted HTTP 200 stream with the full report from the alternate model', async () => {
+  const { promise, resolve } = Promise.withResolvers();
+  // Sanitized capture: a normal CRLF-delimited SSE frame, then a bare JSON
+  // error instead of another SSE frame or a candidate with finishReason STOP.
+  const partial = { candidates: [{ index: 0, content: { role: 'model', parts: [{ text: 'Respondents focused on several' }] } }] };
+  const overload = { error: { code: 500, message: 'This model is currently experiencing high demand.', status: 'INTERNAL' } };
+  const fetch = vi.fn()
+    .mockResolvedValueOnce(new Response('data: ' + JSON.stringify(partial) + '\r\n\r\n' + JSON.stringify(overload, null, 2) + '\n', {
+      status: 200, headers: { 'content-type': 'text/event-stream' },
+    }))
+    .mockReturnValueOnce(promise);
+  vi.stubGlobal('fetch', fetch);
+  const app = initializeApp({ apiKey: 'test-only', projectId: 'test-only', appId: 'test-only' }, 'report-overload');
+  const ai = getAI(app, { backend: new GoogleAIBackend() });
+  const completed = new Response(JSON.stringify({
+    candidates: [{ index: 0, finishReason: 'STOP', content: { role: 'model', parts: [{ text: BAD_REPORT }] } }],
+  }), { headers: { 'content-type': 'application/json' } });
+  try {
+    await boot({ device: 'unavailable', sdk: { getModel: (params) => getGenerativeModel(ai, params) } });
+    action('sample').click();
+    action('recorded').click();
+    action('write-report').click();
+    await vi.waitFor(() => expect(document.querySelector('.report__body').textContent).toContain('Trying another cloud model'));
+    expect(document.querySelector('.report__body').textContent).not.toContain('Respondents focused');
+    expect(loadStudy().report).toBeNull();
+    resolve(completed);
+
+    await vi.waitFor(() => expect(document.querySelector('.report__source')?.textContent).toContain('Written in the cloud'), { timeout: 2500 });
+    expect(document.querySelector('.report__check').textContent).toContain('“Venue had 999 answers.” is not supported');
+    expect(document.querySelector('.report__body').textContent).toContain('Venue had 999 answers.');
+    expect(loadStudy().report).toMatchObject({ source: 'in_cloud', text: BAD_REPORT, counts: { answers_read: 64 } });
+    expect(fetch).toHaveBeenCalledTimes(2);
+    const [[firstUrl, firstRequest], [retryUrl, retryRequest]] = fetch.mock.calls;
+    expect(firstUrl).toContain('/gemini-3.5-flash-lite:streamGenerateContent');
+    expect(retryUrl).toContain('/gemini-4-hydrogen:generateContent');
+    expect(retryRequest.body).toBe(firstRequest.body);
+  } finally {
+    resolve(completed);
+    await deleteApp(app);
+  }
+});
+
 it.each([
-  ['available', 'on_device'],
-  ['unavailable', 'page'],
-])('checks the fallback when the cloud refuses and the local model is %s', async (device, source) => {
+  ['available', 'on_device', 'on this computer'],
+  ['unavailable', 'page', 'did not finish'],
+])('checks the fallback when the cloud refuses and the local model is %s', async (device, source, outcome) => {
   const sdk = fakeSdk({ device, cloud: () => { throw aiError('fetch-error', 403); }, deviceText: () => '{"picks":["2"]}' });
   await boot({ device, sdk });
   action('sample').click();
@@ -104,6 +148,7 @@ it.each([
   action('write-report').click();
   await vi.waitFor(() => expect(document.querySelector('.report__check')?.textContent).toContain('Every number matched the report tally.'));
   expect(loadStudy().report.source).toBe(source);
+  expect(document.querySelector('#audit').textContent).toContain(`Write the report: ${outcome}, because the cloud refused the request`);
 });
 
 it('checks restored reports against their original counts, falling back to the current tally for old saves', async () => {
