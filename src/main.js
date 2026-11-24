@@ -2,6 +2,7 @@ import '@fontsource-variable/atkinson-hyperlegible-next/wght.css';
 import './styles.css';
 import { getSdk } from './ai/firebase.js';
 import { createRouter } from './ai/router.js';
+import { CLOUD_READS_PER_DAY, reserveHostedCloudRead } from './ai/cloud-read-budget.js';
 import { deviceAvailability, deviceReady, deviceCanBecomeReady } from './ai/device.js';
 import { cloudModels, isCloudConfigured } from './config/firebase-config.js';
 import { parseInput } from './study/parse.js';
@@ -20,6 +21,7 @@ import { tallyMarks } from './ui/tally.js';
 import { renderMarkdown } from './ui/markdown.js';
 
 const app = $('#app');
+const hosted = location.hostname === 'hyunsikparker.github.io';
 
 const state = {
   study: loadStudy(),
@@ -43,6 +45,7 @@ const router = createRouter({
   sdk: getSdk(),
   env: { deviceAvailability, online: () => navigator.onLine, cloudConfigured: isCloudConfigured },
   cloudModels,
+  reserveCloudRead: hosted ? reserveHostedCloudRead : undefined,
   log(entry) {
     console.info('[earshot]', entry.route, entry.mode, '->', entry.source ?? `failed (${entry.error})`, entry.fallback ? `fallback: ${entry.fallback.reason}` : '', `${entry.ms} ms`);
     if (entry.route === 'read' || !state.study) return;
@@ -66,6 +69,7 @@ const WHY = {
   'device-not-ready': 'the local model is still downloading',
   'device-error': 'the local model could not finish',
   'device-timeout': 'the local model took too long',
+  'cloud-read-limit': 'this browser could not reserve another cloud reading request',
   'no-path': 'neither the cloud nor a local model was available',
 };
 
@@ -84,6 +88,8 @@ function explain(error) {
       return 'Neither the local model nor the cloud is available right now.';
     case 'quota':
       return 'The cloud model has reached its limit for now. Try again in a few minutes.';
+    case 'cloud-read-limit':
+      return `The hosted demo allows ${CLOUD_READS_PER_DAY} cloud reading requests per browser each day. Read on this computer or try again after midnight UTC.`;
     case 'blocked':
       return 'The cloud refused the request.';
     case 'offline':
@@ -213,7 +219,7 @@ function intake(text, title = 'Untitled study') {
 const confidentialHint = (on) =>
   on
     ? 'Only the local model on this computer reads them. If this browser has none, they are not read at all.'
-    : 'The local model reads them when it can. If this browser has none, the cloud model reads them instead.';
+    : `The local model reads them when it can. Otherwise the cloud model may read them.${hosted ? ` This demo allows ${CLOUD_READS_PER_DAY} cloud reading requests per browser each day (UTC).` : ''}`;
 
 function intakeNote(study) {
   const from = study.intake;
@@ -521,8 +527,8 @@ function renderSheetBlock() {
 function reportSource(r) {
   const why = WHY[r.reason] ?? 'the cloud could not be used';
   let line = 'Written in the cloud from the tally sheet.';
-  if (r.source === 'on_device') line = `Put together on this computer because ${why}. The local model chose which counts to lead with. Every sentence is taken from the counts, and nothing was sent.`;
-  else if (r.source === 'page') line = `Put together by this page because ${why} and this browser has no local model. Every sentence is taken from the counts, and nothing was sent.`;
+  if (r.source === 'on_device') line = `Put together on this computer because ${why}. The local model chose which counts to lead with.`;
+  else if (r.source === 'page') line = `Put together by this page because ${why} and this browser has no local model.`;
   return r.shortened ? `${line} Shortened ${place(r.shortened)}.` : line;
 }
 

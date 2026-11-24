@@ -96,7 +96,7 @@ export function fakeEnv({ device = 'available', online = true, configured = true
   return env;
 }
 
-export const MODELS = { light: 'light-model', writing: 'writing-model' };
+export const MODELS = { light: 'light-model', writing: 'writing-model', writingFallback: 'writing-fallback-model' };
 
 export function makeStudy(overrides = {}) {
   return {

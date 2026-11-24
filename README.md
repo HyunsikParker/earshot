@@ -1,6 +1,6 @@
 # Earshot
 
-Earshot sorts the open-ended answers from a survey on your own computer and sends only the counts to the cloud for the write-up. It is a web app for Chrome on desktop, built for #BuildHybridAI 2026 on Firebase AI Logic hybrid inference.
+Earshot sorts confidential open-ended survey answers on your own computer. The cloud writes a report from a tally sheet you can review before sending. Earshot is a web app for desktop Chrome, built for #BuildHybridAI 2026 on Firebase AI Logic.
 
 It is for people who collected feedback after promising to keep it confidential: event organisers, team leads, teachers, researchers. Free-text answers name colleagues, describe health and family matters, and report misconduct. Reading a few hundred of them takes hours, and pasting them into a cloud model breaks the promise.
 
@@ -9,9 +9,9 @@ Try it at https://hyunsikparker.github.io/earshot/ in Chrome on a desktop comput
 ## What it does
 
 1. You paste answers or choose a CSV file, type the question you asked, and name the themes to sort by. Earshot can suggest themes.
-2. Gemini Nano, the model built into Chrome, reads each answer on your computer. It gives the answer its themes, a tone, a safety flag (harassment, discrimination, feeling unsafe) and a one-line gist that leaves out names and contact details.
+2. On this computer, Earshot asks Gemini Nano to label each confidential answer with themes, a tone and a safety flag (harassment, discrimination or feeling unsafe), and to write a one-line gist without identifying details.
 3. You review. Gists are shown by default and the original is one click away. Any label can be changed.
-4. The right-hand column shows the tally sheet, which is the only thing that leaves the computer. You send it, and Gemini in the cloud writes the report from the counts.
+4. The right-hand column shows the exact tally sheet the cloud receives for the report. The sheet includes the question and theme definitions. It does not include raw answers.
 
 ## How hybrid inference is used
 
@@ -20,9 +20,9 @@ Every inference call goes through the Firebase AI Logic SDK (`firebase/ai`). The
 | Step | Data it sees | Mode | Where it runs |
 |---|---|---|---|
 | Read an answer | The answers | `ONLY_ON_DEVICE` for a confidential study, `PREFER_ON_DEVICE` otherwise | On the device. For a confidential study the SDK throws when there is no local model, so a missing model cannot turn into an upload. A study you mark as not confidential is read in the cloud when the device cannot read it. |
-| Find themes in a sample of answers | 12 of the answers | Same as reading | Same as reading |
-| Suggest themes from the question | The question you typed | `PREFER_IN_CLOUD` | In the cloud. The SDK falls back to the device when the cloud fails. |
-| Write the report | The tally sheet | `ONLY_IN_CLOUD`, then the device | In the cloud, with two retries on 429 and 503. If that fails, the router records why (offline, quota, blocked, not connected) and the device takes over with a smaller job, described below. |
+| Find themes in a sample of answers | The question and up to 12 answers | Same as reading | Same as reading |
+| Suggest themes from the question | The question and any survey context you typed | `PREFER_IN_CLOUD` | In the cloud. The SDK falls back to the device when the cloud fails. |
+| Write the report | The tally sheet | `ONLY_IN_CLOUD`, then the device | In the cloud. A 429 gets one retry on another free-tier model; a 503 gets up to two retries with backoff. If that fails, the app records why and falls back locally. |
 | Shorten the report | The report | `PREFER_ON_DEVICE` | On the device. The cloud takes over when there is no local model. |
 
 Other details:
@@ -37,7 +37,7 @@ Other details:
 
 ## What leaves the computer
 
-The cloud request is built from the tally sheet and nothing else ([`src/study/outbound.js`](src/study/outbound.js)). The sheet holds:
+For report writing, the cloud request is built from the tally sheet ([`src/study/outbound.js`](src/study/outbound.js)). The sheet holds:
 
 - your question and your description of the survey;
 - the theme names and definitions, which you wrote;
@@ -45,7 +45,7 @@ The cloud request is built from the tally sheet and nothing else ([`src/study/ou
 - counts per group if your file has a group column, with any count below 3 withheld;
 - gists you approve one at a time. A gist cannot be approved if it contains an email address, phone number, link, handle or long number, a capitalised word carried over from the answer, or four consecutive words of the answer.
 
-Before a request is sent, `assertNoVerbatim()` compares the sheet with every answer and blocks it if four consecutive words match. The sheet for the 64-answer sample is about 2.5 KB.
+Before a request is sent, `assertNoVerbatim()` compares the sheet with every answer and blocks it if four consecutive words match. The sheet for the recorded 64-answer sample is about 2.4 KB before any gists are approved.
 
 Limits you should know about. Theme names and definitions are yours, so a name typed there is sent. A gist paraphrases an answer and therefore carries some of its content, which is why gists stay on the device unless you approve them. The name check relies on capitalisation and cannot catch a name that only ever starts a sentence. Withholding small counts does not stop someone subtracting from a total.
 
@@ -54,6 +54,12 @@ Limits you should know about. Theme names and definitions are yours, so a name t
 The fallback does not ask the small model to write. The page builds statements straight from the sheet, such as "Organization came up most often, in 18 answers." The local model chooses which statements lead, and every count follows. With no model at all, the page shows the same statements in a fixed order.
 
 Under a finished report, `findUnsupported()` checks the numbers and flags comparisons or advice the tally cannot support. It uses the counts from when the report was written, or the current tally for reports saved before the check was added. The check names the first flagged statement and says if it found others. It does not delete or change any report text.
+
+## Free-tier limits
+
+Report writing uses `gemini-3.5-flash-lite`, separate from the other cloud steps on `gemini-3.8-flash`. A report that receives HTTP 429 retries once on `gemini-4-hydrogen`. All three are listed as not requiring billing in the Firebase AI Logic model list used for this project. Project-wide free-tier limits still apply.
+
+On the GitHub Pages demo, this build allows **five cloud reading requests per browser per UTC day** for non-confidential studies. Answer reads and theme discovery from a sample share that limit. Each request uses a slot before it is sent, even if it fails. Tabs in the same browser storage share the counter; if it cannot be stored, the app does not send the request. This is a browser limit, not a project-wide quota increase or server-side cap. Local runs, recorded labels and report writing do not use the five slots.
 
 ## Measurements
 

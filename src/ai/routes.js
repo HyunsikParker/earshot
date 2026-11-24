@@ -33,6 +33,6 @@ export const ROUTES = Object.freeze({
   suggest: { data: DataClass.QUESTION, cloudModel: 'light', label: 'Suggest themes from the question' },
   // The report is written in the cloud. If the cloud cannot be reached the
   // router records why and runs the on-device variant with its own shorter prompt.
-  report: { data: DataClass.TALLIES, cloudModel: 'writing', deviceFallback: true, label: 'Write the report' },
+  report: { data: DataClass.TALLIES, cloudModel: 'writing', quotaFallbackModel: 'writingFallback', deviceFallback: true, label: 'Write the report' },
   shorten: { data: DataClass.REPORT, cloudModel: 'light', label: 'Shorten the report' },
 });

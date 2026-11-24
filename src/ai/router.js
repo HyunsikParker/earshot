@@ -1,7 +1,7 @@
 // Chooses where each step runs, runs it through Firebase AI Logic, and writes
 // down what happened. The policy lives in routes.js; this file enforces it.
 import { InferenceMode } from 'firebase/ai';
-import { ROUTES, modeFor } from './routes.js';
+import { DataClass, ROUTES, modeFor } from './routes.js';
 import { TEXT_EN, deviceReady, deviceCanBecomeReady } from './device.js';
 
 export class RouteError extends Error {
@@ -27,8 +27,6 @@ export function classifyCloudError(error, online = true) {
   if (error?.code === 'error') return 'network';
   return 'cloud-error';
 }
-
-const isRetryable = (error) => error?.code === 'fetch-error' && [429, 503].includes(error?.customErrorData?.status);
 
 export function buildModelParams(mode, { cloudModel, system, schema }, signal) {
   const createOptions = { expectedInputs: [...TEXT_EN], expectedOutputs: [...TEXT_EN] };
@@ -61,10 +59,11 @@ const deviceFailure = (error) => (error?.code === 'timeout' ? 'device-timeout' :
  * @param {object} deps
  * @param {{getModel: Function}} deps.sdk  from ai/firebase.js
  * @param {{deviceAvailability: () => Promise<string>, online: () => boolean, cloudConfigured: () => boolean}} deps.env
- * @param {{light: string, writing: string}} deps.cloudModels
+ * @param {{light: string, writing: string, writingFallback?: string}} deps.cloudModels
+ * @param {() => Promise<boolean>} [deps.reserveCloudRead]  hosted budget for non-confidential answers
  * @param {(entry: object) => void} [deps.log]  receives one entry per finished or failed step
  */
-export function createRouter({ sdk, env, cloudModels, log = () => {}, sleep = defaultSleep, now = () => Date.now(), retryDelays = [800, 2400], deviceTimeoutMs = 45000 }) {
+export function createRouter({ sdk, env, cloudModels, reserveCloudRead, log = () => {}, sleep = defaultSleep, now = () => Date.now(), retryDelays = [800, 2400], deviceTimeoutMs = 45000 }) {
   const models = new Map();
   let deviceQueue = Promise.resolve();
 
@@ -178,25 +177,26 @@ export function createRouter({ sdk, env, cloudModels, log = () => {}, sleep = de
     }
 
     if (mode === InferenceMode.PREFER_ON_DEVICE) {
+      // On the hosted copy, the SDK must not fall back with raw answers before
+      // the app can reserve a request. Try the two paths separately there.
+      const limitCloud = route.data === DataClass.ANSWERS && reserveCloudRead;
+      let reason = deviceDown;
+      let cloudMode = limitCloud ? InferenceMode.ONLY_IN_CLOUD : mode;
       if (!deviceDown) {
-        let failure;
         try {
-          return finish(await invoke(mode, spec, prompt, onChunk));
+          const localMode = limitCloud ? InferenceMode.ONLY_ON_DEVICE : mode;
+          return finish(await invoke(localMode, spec, prompt, onChunk));
         } catch (error) {
-          failure = deviceFailure(error);
-          if (!cloudUsable) fail(failure, `The local model could not finish this step: ${error.message}`, { cause: error });
-        }
-        try {
-          const out = await invoke(InferenceMode.ONLY_IN_CLOUD, spec, prompt, onChunk);
-          return finish({ ...out, source: out.source ?? 'in_cloud' }, { fallback: { from: 'device', reason: failure } });
-        } catch (error) {
-          fail(classifyCloudError(error, env.online()), `Neither the local model nor the cloud could finish this step: ${error.message}`, { cause: error });
+          reason = deviceFailure(error);
+          if (!cloudUsable) fail(reason, `The local model could not finish this step: ${error.message}`, { cause: error });
+          cloudMode = InferenceMode.ONLY_IN_CLOUD;
         }
       }
       if (!cloudUsable) fail('no-path', 'The local model is not available and the cloud cannot be reached.', { device: deviceDown, cloud: cloudDown });
+      if (limitCloud && !(await limitCloud())) fail('cloud-read-limit', 'This browser cannot send another cloud reading request today.');
       try {
-        // The local model is missing, so the SDK sends this request to the cloud.
-        return finish(await invoke(mode, spec, prompt, onChunk), { fallback: { from: 'device', reason: deviceDown } });
+        const out = await invoke(cloudMode, spec, prompt, onChunk);
+        return finish({ ...out, source: out.source ?? 'in_cloud' }, { fallback: { from: 'device', reason } });
       } catch (error) {
         fail(classifyCloudError(error, env.online()), `The cloud could not finish this step: ${error.message}`, { cause: error });
       }
@@ -220,17 +220,28 @@ export function createRouter({ sdk, env, cloudModels, log = () => {}, sleep = de
       return onDevice({ fallback: { from: 'cloud', reason: cloudDown } });
     }
 
-    // ONLY_IN_CLOUD: retry what is worth retrying, then say why it failed.
+    // ONLY_IN_CLOUD: retry quota once on a different model and keep the
+    // existing backoff for temporary service failures.
+    const alternateModel = cloudModels[route.quotaFallbackModel];
+    let cloudSpec = spec;
+    let serviceRetries = 0;
     let reason = cloudUsable ? null : cloudDown;
     let attempts = 0;
     while (cloudUsable) {
       attempts += 1;
       try {
-        const out = await invoke(mode, spec, prompt, onChunk);
+        const out = await invoke(mode, cloudSpec, prompt, onChunk);
         return finish({ ...out, source: out.source ?? 'in_cloud' }, { attempts });
       } catch (error) {
-        if (isRetryable(error) && attempts <= retryDelays.length) {
-          await sleep(retryDelays[attempts - 1]);
+        const status = error?.code === 'fetch-error' ? error.customErrorData?.status : null;
+        if (status === 429 && cloudSpec === spec && alternateModel && alternateModel !== spec.cloudModel && env.online()) {
+          cloudSpec = { ...spec, cloudModel: alternateModel };
+          await sleep(retryDelays[0] ?? 0);
+          continue;
+        }
+        if (status === 503 && serviceRetries < retryDelays.length && env.online()) {
+          await sleep(retryDelays[serviceRetries]);
+          serviceRetries += 1;
           continue;
         }
         reason = classifyCloudError(error, env.online());

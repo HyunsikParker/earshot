@@ -87,6 +87,38 @@ describe('reading answers that are not confidential', () => {
     const out = await router.run('shorten', { prompt: 'p' });
     expect(out).toMatchObject({ source: 'in_cloud', fallback: { from: 'device', reason: 'device-error' } });
   });
+
+  it.each(['read', 'discover'])('reserves budget before sending hosted %s to the cloud', async (route) => {
+    const reserveCloudRead = vi.fn().mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+    const { router, sdk } = setup({ env: { device: 'downloading' }, reserveCloudRead });
+    const options = { prompt: 'public answers', confidential: false };
+    await expect(router.run(route, options)).resolves.toMatchObject({ source: 'in_cloud' });
+    await expect(router.run(route, options)).rejects.toMatchObject({ code: 'cloud-read-limit' });
+    expect(reserveCloudRead).toHaveBeenCalledTimes(2);
+    expect(sdk.calls.requests).toEqual([expect.objectContaining({ mode: InferenceMode.ONLY_IN_CLOUD, path: 'cloud' })]);
+  });
+
+  it('never spends hosted budget on the local path and cannot fall back past the cap', async () => {
+    const reserveCloudRead = vi.fn(async () => false);
+    const deviceText = vi.fn().mockResolvedValueOnce('local labels').mockRejectedValueOnce(new Error('local failed'));
+    const { router, sdk } = setup({ sdk: { deviceText }, reserveCloudRead });
+    const options = { prompt: 'public answer', confidential: false };
+    await expect(router.run('read', options)).resolves.toMatchObject({ source: 'on_device' });
+    expect(reserveCloudRead).not.toHaveBeenCalled();
+    await expect(router.run('read', options)).rejects.toMatchObject({ code: 'cloud-read-limit' });
+    expect(reserveCloudRead).toHaveBeenCalledTimes(1);
+    expect(sdk.calls.requests.map((request) => request.mode)).toEqual([InferenceMode.ONLY_ON_DEVICE, InferenceMode.ONLY_ON_DEVICE]);
+    expect(sdk.calls.cloud).toBe(0);
+  });
+
+  it('does not spend hosted budget on confidential reads or cloud reports', async () => {
+    const reserveCloudRead = vi.fn(async () => false);
+    const { router, sdk } = setup({ env: { device: 'unsupported' }, reserveCloudRead });
+    await expect(router.run('read', { prompt: 'confidential answer' })).rejects.toMatchObject({ code: 'device-unavailable' });
+    await expect(router.run('report', { prompt: 'sheet' })).resolves.toMatchObject({ source: 'in_cloud' });
+    expect(reserveCloudRead).not.toHaveBeenCalled();
+    expect(sdk.calls.cloud).toBe(1);
+  });
 });
 
 describe('suggesting themes from the question (prefer cloud)', () => {
@@ -127,19 +159,30 @@ describe('writing the report (cloud, with a device variant)', () => {
     expect(sdk.calls.params[0].inCloudParams.model).toBe('writing-model');
   });
 
-  it('retries 429 with growing delays and then succeeds', async () => {
-    const cloud = vi.fn((request, params, n) => { if (n < 3) throw aiError('fetch-error', 429); return 'report'; });
-    const { router, sleep } = setup({ sdk: { cloud } });
+  it('retries 429 once on the alternate model and then succeeds', async () => {
+    const cloud = vi.fn((request, params, n) => { if (n === 1) throw aiError('fetch-error', 429); return 'report'; });
+    const { router, sdk, sleep } = setup({ sdk: { cloud } });
+    const out = await router.run('report', { prompt: 'sheet' });
+    expect(out).toMatchObject({ source: 'in_cloud', attempts: 2, text: 'report' });
+    expect(sdk.calls.params.map((params) => params.inCloudParams.model)).toEqual([MODELS.writing, MODELS.writingFallback]);
+    expect(sleep.mock.calls.map((c) => c[0])).toEqual([800]);
+  });
+
+  it('keeps the backoff retries on the same model for HTTP 503', async () => {
+    const cloud = vi.fn((request, params, n) => { if (n < 3) throw aiError('fetch-error', 503); return 'report'; });
+    const { router, sdk, sleep } = setup({ sdk: { cloud } });
     const out = await router.run('report', { prompt: 'sheet' });
     expect(out).toMatchObject({ source: 'in_cloud', attempts: 3, text: 'report' });
+    expect(sdk.calls.params.map((params) => params.inCloudParams.model)).toEqual([MODELS.writing]);
     expect(sleep.mock.calls.map((c) => c[0])).toEqual([800, 2400]);
   });
 
   it('gives up after the retries and writes on the device with the device prompt', async () => {
     const { router, sdk, sleep } = setup({ sdk: { cloud: () => { throw aiError('fetch-error', 429); } } });
     const out = await router.run('report', { prompt: 'cloud prompt', devicePrompt: 'device prompt', system: 'cloud system', deviceSystem: 'device system' });
-    expect(out).toMatchObject({ source: 'on_device', attempts: 3, fallback: { from: 'cloud', reason: 'quota' } });
-    expect(sleep).toHaveBeenCalledTimes(2);
+    expect(out).toMatchObject({ source: 'on_device', attempts: 2, fallback: { from: 'cloud', reason: 'quota' } });
+    expect(sdk.calls.cloud).toBe(2);
+    expect(sleep).toHaveBeenCalledTimes(1);
     expect(sdk.calls.requests.at(-1)).toMatchObject({ path: 'device', request: 'device prompt' });
     expect(sdk.calls.params.at(-1).onDeviceParams.createOptions.initialPrompts[0].content[0].value).toBe('device system');
   });

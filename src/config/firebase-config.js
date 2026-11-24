@@ -14,14 +14,13 @@ export const firebaseConfig = {
 // A site key is public by design.
 export const recaptchaEnterpriseSiteKey = '6Le7UiMuAAAAAFRoeg3Qyt5mdatb1qkkffeEwqka';
 
-// Cloud models marked "billing not required" in the Firebase AI Logic model
-// list (read 2026-11-15). `light` is also the SDK's default hybrid fallback.
+// All three are marked "billing not required" in the Firebase AI Logic model
+// list in the project requirements. Answer reading uses a different quota
+// from report writing. Keep the historically verified Flash-Lite for reports.
 export const cloudModels = {
-  light: 'gemini-3.5-flash-lite',
-  // gemini-3.8-flash is also listed as billing not required, but on 2026-11-16
-  // it returned HTTP 500 once and no response within 180 s twice for the
-  // report request; gemini-3.5-flash-lite answered the same request in 7 s.
+  light: 'gemini-3.8-flash',
   writing: 'gemini-3.5-flash-lite',
+  writingFallback: 'gemini-4-hydrogen',
 };
 
 export function isCloudConfigured(config = firebaseConfig) {
