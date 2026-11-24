@@ -79,7 +79,15 @@ Without a Firebase project the app runs its on-device steps and summarises the c
 3. Rebuild and open the app on localhost. The console prints an App Check debug token. Register it in the Firebase console under App Check > Apps > Manage debug tokens. Do not commit it.
 4. For a hosted copy, create a reCAPTCHA Enterprise key for the domain and put its site key in the same file.
 
-If the browser has no local model, the sample study offers labels recorded from an earlier on-device run. The page says that they are recorded.
+## Test the sample study
+
+In desktop Chrome, choose **Open the sample study**, then pick one of these paths:
+
+1. **See a finished run without a download.** Choose **Show labels recorded on another computer**. It is available before reading starts, even if Chrome says the local model has not finished downloading. The page marks the labels as recorded.
+2. **Read a few answers.** Choose **Start reading**, then **Pause** after a few answers. If the local model is not ready, Chrome needs to download it first. You can write a report from the answers counted so far.
+3. **Read all 64 answers.** Choose **Start reading** and let it finish. A full local read took about 15 minutes on an M4 Mac laptop, not including the model download.
+
+In the report pane, open **See the exact text** to review the tally sheet, then choose **Send the counts and write the report**. **Where each step ran** distinguishes recorded labels, local reading and cloud writing.
 
 ## Tests
 

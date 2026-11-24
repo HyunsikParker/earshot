@@ -240,6 +240,7 @@ function renderFrame() {
       <div class="frame__head">
         <h1 tabindex="-1">${plural(s.answers.length, 'answer')} to read</h1>
         <p class="hint">${s.sample ? 'Sample study. Every answer in it is made up.' : esc(intakeNote(s))}</p>
+        <div class="frame__recorded" id="frame-recorded">${canShowRecorded(s) ? RECORDED_CHOICE : ''}</div>
       </div>
       <div>
         <div class="field"><label for="title">Name of this study</label><input id="title" type="text" data-input="title" value="${esc(s.title)}" /></div>
@@ -364,9 +365,21 @@ function renderThemes() {
   restore();
 }
 
+function canShowRecorded(study) {
+  return !state.run.active && matchesRecorded(study) && !study.answers.some((answer) => answer.reading);
+}
+
+const RECORDED_CHOICE = `<button class="btn" type="button" data-action="recorded">Show labels recorded on another computer</button>
+    <p class="hint">Recorded labels need no download. Or start reading and pause after a few answers; the report uses what was counted so far. A full read of the ${SAMPLE_SIZE} answers took about 15 minutes on an M4 Mac laptop.</p>`;
+
 function renderProgress() {
   const s = state.study;
-  if (!s?.started) return;
+  if (!s?.started) {
+    const choice = $('#frame-recorded');
+    const show = canShowRecorded(s);
+    if (choice && show !== Boolean(choice.firstElementChild)) choice.innerHTML = show ? RECORDED_CHOICE : '';
+    return;
+  }
   const total = s.answers.length;
   const done = s.answers.filter((a) => a.reading).length;
   const from = (source) => s.answers.filter((a) => a.reading?.source === source).length;
@@ -380,15 +393,12 @@ function renderProgress() {
   let button = '';
   if (state.run.active) button = `<button class="btn" type="button" data-action="pause" ${state.run.stop ? 'aria-disabled="true"' : ''}>${state.run.stop ? 'Pausing' : 'Pause'}</button>`;
   else if (done < total) button = `<button class="btn btn--primary" type="button" data-action="read">${done === 0 ? 'Start reading' : 'Continue reading'}</button>`;
-  // A browser without a local model can still show what a run looks like.
-  const noLocalModel = !['checking', 'available', 'downloadable', 'downloading'].includes(state.device);
-  const offer = !state.run.active && done === 0 && noLocalModel && matchesRecorded(s) ? '<button class="btn" type="button" data-action="recorded">Show labels recorded on another computer</button>' : '';
   const body = `
     <p aria-live="polite">${esc(line)}</p>
     <div class="progress__bar" role="progressbar" aria-label="Answers read" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><span style="width:${total ? (done / total) * 100 : 0}%"></span></div>
     ${state.run.problem ? `<p class="notice notice--stop" role="alert">${esc(state.run.problem)}</p>` : ''}
     ${state.storageFull ? '<p class="notice notice--stop" role="alert">This browser has no room left to save the study. Labels will be lost when the page closes.</p>' : ''}
-    ${button}${offer}`;
+    ${button}${canShowRecorded(s) ? RECORDED_CHOICE : ''}`;
   const links = '<p><button class="linkbtn" type="button" data-action="change-themes">Change the themes</button><br /><button class="linkbtn" type="button" data-action="discard">Start a new study</button></p>';
   // The same block sits above the answers on a narrow screen, where the themes are a separate part.
   for (const [id, extra] of [['progress', links], ['progress-narrow', '']]) {
@@ -751,13 +761,15 @@ const actions = {
   read: beginReading,
   recorded() {
     const s = state.study;
-    if (!matchesRecorded(s)) return;
+    if (!canShowRecorded(s)) return;
+    s.themes = normalizeThemes(s.themes);
+    s.started = true;
     recordedReadings().forEach((reading, i) => {
       s.answers[i].reading = reading;
     });
     state.run.problem = '';
     persistNow();
-    renderWork();
+    render();
     focusHeading();
   },
   pause() {
@@ -819,6 +831,7 @@ app.addEventListener('input', (event) => {
   else if (input === 'theme-definition') s.themes[Number(index)].definition = event.target.value;
   else s[input] = event.target.value;
   if (input === 'title') $('#study-title').textContent = s.title;
+  if (input === 'theme-name') renderProgress();
   persist();
 });
 

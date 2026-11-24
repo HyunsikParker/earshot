@@ -431,6 +431,14 @@ p {
   border-top: 1px solid var(--rule);
 }
 
+.frame__recorded:not(:empty) {
+  margin-top: 0.75rem;
+}
+
+.frame__recorded .hint {
+  margin: 0.5rem 0 0;
+}
+
 /* ---------- workspace ---------- */
 
 .tabs {

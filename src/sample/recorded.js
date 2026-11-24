@@ -1,8 +1,10 @@
 // Labels from one on-device run of the sample study: Gemini Nano in Chrome 157
 // on an Apple M4 Mac, 15 November 2026 (first run of eval/read110.js). They are
-// shown only when a browser has no local model, and the page says they are
-// recorded. They are kept exactly as the model produced them, mistakes included.
+// offered before a sample run starts, and the page says they are recorded.
+// They are kept exactly as the model produced them, mistakes included.
 // Each row: theme positions | tone | safety flag | gist.
+
+import { normalizeThemes } from '../study/codebook.js';
 
 export const RECORDED_ON = '15 November 2026';
 
@@ -74,9 +76,9 @@ const ROWS = `2|n|0|Wi-Fi connectivity issues impacted the conference experience
 2|n|0|Workshop room setup was inadequate, impacting attendee comfort during the event.
 0|n|0|The early workshop start time was unwelcome for some attendees.`.split('\n');
 
-/** True when `study` is the untouched sample these labels were recorded for. */
+/** True when the sample has the theme labels this recording uses. */
 export function matchesRecorded(study) {
-  return Boolean(study?.sample) && study.answers.length === ROWS.length && study.themes.map((t) => t.id).join() === THEME_IDS.join();
+  return Boolean(study?.sample) && study.answers.length === ROWS.length && normalizeThemes(study.themes).map((t) => t.id).join() === THEME_IDS.join();
 }
 
 export function recordedReadings() {
