@@ -846,10 +846,16 @@ summary {
   margin-bottom: 0;
 }
 
-.report__source {
+.report__source,
+.report__check {
   margin: 0.6rem 0;
   color: var(--graphite-soft);
   font-size: 0.9rem;
+}
+
+.report__check--flagged {
+  color: var(--stamp);
+  overflow-wrap: anywhere;
 }
 
 .report__actions {

@@ -2,7 +2,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { getSdk } from '../src/ai/firebase.js';
 import { sampleStudy } from '../src/sample/conference.js';
 import { loadStudy, saveStudy } from '../src/store.js';
-import { fakeSdk } from './helpers/fakes.js';
+import { aiError, fakeSdk } from './helpers/fakes.js';
 
 vi.mock('../src/ai/firebase.js', () => ({ getSdk: vi.fn() }));
 
@@ -73,4 +73,49 @@ it('does not offer the recording for a changed sample theme or an imported study
   theme.value = 'Another theme';
   theme.dispatchEvent(new Event('input', { bubbles: true }));
   expect(action('recorded')).toBeNull();
+});
+
+const GOOD_REPORT = '## What people talked about most\n- **64** answers were read.';
+const BAD_REPORT = '## What people talked about most\n- Venue had **999** answers.';
+
+it.each([
+  [GOOD_REPORT, 'Every number matched the report tally.', '64 answers were read.'],
+  [BAD_REPORT, '“Venue had 999 answers.” is not supported', 'Venue had 999 answers.'],
+])('checks a finished cloud report and preserves its text: %s', async (report, checkText, bodyText) => {
+  const sdk = await boot({ sdk: fakeSdk({ cloud: () => report }) });
+  action('sample').click();
+  action('recorded').click();
+  action('write-report').click();
+  await vi.waitFor(() => expect(document.querySelector('.report__check')?.textContent).toContain(checkText));
+  expect(document.querySelector('.report__body').textContent).toContain(bodyText);
+  expect(document.querySelector('.report__source').textContent).toContain('Written in the cloud');
+  expect(loadStudy().report).toMatchObject({ text: report, counts: { answers_read: 64 } });
+  expect(sdk.calls.cloud).toBe(1);
+});
+
+it.each([
+  ['available', 'on_device'],
+  ['unavailable', 'page'],
+])('checks the fallback when the cloud refuses and the local model is %s', async (device, source) => {
+  const sdk = fakeSdk({ device, cloud: () => { throw aiError('fetch-error', 403); }, deviceText: () => '{"picks":["2"]}' });
+  await boot({ device, sdk });
+  action('sample').click();
+  action('recorded').click();
+  action('write-report').click();
+  await vi.waitFor(() => expect(document.querySelector('.report__check')?.textContent).toContain('Every number matched the report tally.'));
+  expect(loadStudy().report.source).toBe(source);
+});
+
+it('checks restored reports against their original counts, falling back to the current tally for old saves', async () => {
+  const study = { ...sampleStudy(), started: true, report: { text: 'Venue: 23 answers.', source: 'in_cloud' } };
+  await boot({ study });
+  expect(document.querySelector('.report__check').textContent).toContain('“Venue: 23 answers.” is not supported by the current tally');
+
+  study.report.counts = {
+    answers_received: 64, answers_read: 23, answers_with_no_theme: 0, safety_reports: 0,
+    overall_tone: { positive: 0, negative: 23, mixed: 0, neutral: 0 },
+    tallies: [{ theme: 'Venue', answers: 23, positive: 0, negative: 23, mixed: 0, neutral: 0 }],
+  };
+  await boot({ study });
+  expect(document.querySelector('.report__check').textContent).toContain('Every number matched the report tally.');
 });

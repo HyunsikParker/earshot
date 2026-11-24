@@ -51,7 +51,9 @@ Limits you should know about. Theme names and definitions are yours, so a name t
 
 ## When the cloud cannot write the report
 
-The fallback does not ask the small model to write. The page builds statements straight from the sheet, such as "Organization came up most often, in 18 answers." The local model chooses which statements lead, and every count follows. `findUnsupported()` in [`src/study/facts.js`](src/study/facts.js) checks a text against the sheet, and a test runs it over 300 generated sheets. With no model at all, the page shows the same statements in a fixed order.
+The fallback does not ask the small model to write. The page builds statements straight from the sheet, such as "Organization came up most often, in 18 answers." The local model chooses which statements lead, and every count follows. With no model at all, the page shows the same statements in a fixed order.
+
+Under a finished report, `findUnsupported()` checks the numbers and flags comparisons or advice the tally cannot support. It uses the counts from when the report was written, or the current tally for reports saved before the check was added. The check names the first flagged statement and says if it found others. It does not delete or change any report text.
 
 ## Measurements
 
@@ -91,14 +93,15 @@ In the report pane, open **See the exact text** to review the tally sheet, then 
 
 ## Tests
 
-`npm test` runs 90 tests with Vitest. They cover:
+`npm test` runs the Vitest suite. It covers:
 
 - which mode and path each step uses for every combination of local model state, connection and cloud setup;
 - that reading a confidential study never calls the cloud, including when the local model is missing or fails on an answer;
 - retries, fallback reasons, the on-device queue, and aborting and recovering from a local generation that runs on;
 - parsing, tallies and withheld small counts;
 - the wording checks on anything that leaves the computer;
-- the fallback report against generated tally sheets;
+- the recorded sample shortcut and a local run paused with a partial tally;
+- the in-app report check for matching and unsupported claims, and the fallback report against generated tally sheets;
 - the real Firebase SDK driven against a stand-in `LanguageModel`, asserting that `inferenceSource` is `on_device` and that no network request is made.
 
 `eval/index.html` and `eval/read.html` are the measurement pages. They are built to `dist/eval/` and run on-device only.

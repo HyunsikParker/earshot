@@ -10,7 +10,7 @@ import { readAll } from './study/reader.js';
 import { tally } from './study/aggregate.js';
 import { buildOutbound, checkOutbound, outboundText } from './study/outbound.js';
 import { gistAllowed } from './study/guard.js';
-import { reportPrompt, shortenPrompt, REPORT_SYSTEM } from './study/report.js';
+import { findReportIssues, reportPrompt, shortenPrompt, REPORT_SYSTEM } from './study/report.js';
 import { sheetFacts, fallbackReport, pickPrompt, pickSchema, parsePicks, PICK_SYSTEM } from './study/facts.js';
 import { loadStudy, saveStudy, clearStudy, newStudy } from './store.js';
 import { sampleStudy, SAMPLE_SIZE } from './sample/conference.js';
@@ -520,10 +520,20 @@ function renderSheetBlock() {
 
 function reportSource(r) {
   const why = WHY[r.reason] ?? 'the cloud could not be used';
-  let line = 'Written in the cloud from the counts above.';
+  let line = 'Written in the cloud from the tally sheet.';
   if (r.source === 'on_device') line = `Put together on this computer because ${why}. The local model chose which counts to lead with. Every sentence is taken from the counts, and nothing was sent.`;
   else if (r.source === 'page') line = `Put together by this page because ${why} and this browser has no local model. Every sentence is taken from the counts, and nothing was sent.`;
   return r.shortened ? `${line} Shortened ${place(r.shortened)}.` : line;
+}
+
+function reportCheck(r, study) {
+  const statements = [...new Set(findReportIssues(r.text, r.counts ?? buildOutbound(study)).map(({ statement }) => statement))];
+  const basis = r.counts ? 'the report tally' : 'the current tally';
+  const more = statements.length > 1 ? ` (${statements.length - 1} more flagged)` : '';
+  const line = statements.length
+    ? `Count check: “${statements[0]}” is not supported by ${basis}${more}.`
+    : `Count check: Every number matched ${basis}.`;
+  return `<p class="report__check${statements.length ? ' report__check--flagged' : ''}" role="status">${esc(line)}</p>`;
 }
 
 function renderReport() {
@@ -537,6 +547,7 @@ function renderReport() {
     el.innerHTML = `
       <h2>Report</h2>
       <div class="report__body">${renderMarkdown(r.text)}</div>
+      ${reportCheck(r, state.study)}
       <p class="report__source" role="status">${esc(reportSource(r))}</p>
       <div class="report__actions">
         ${r.source === 'in_cloud' ? '<button class="linkbtn" type="button" data-action="shorten">Shorten</button>' : ''}
@@ -632,6 +643,8 @@ async function writeReport() {
   renderSheetBlock();
   renderReport();
   const facts = sheetFacts(sheet);
+  const { answers_received, answers_read, answers_with_no_theme, safety_reports, overall_tone, tallies, by_group } = sheet;
+  const counts = { answers_received, answers_read, answers_with_no_theme, safety_reports, overall_tone, tallies, by_group };
   try {
     const out = await router.run('report', {
       prompt: reportPrompt(sheet),
@@ -648,12 +661,12 @@ async function writeReport() {
       },
     });
     const text = out.source === 'on_device' ? fallbackReport(sheet, parsePicks(out.text, facts)) : out.text.trim();
-    s.report = { text, source: out.source, reason: out.fallback?.reason ?? null, at: out.at, shortened: null };
+    s.report = { text, counts, source: out.source, reason: out.fallback?.reason ?? null, at: out.at, shortened: null };
     persistNow();
   } catch (error) {
     if (error?.code === 'no-path') {
       // No model at all. The page can still state what the counts say.
-      s.report = { text: fallbackReport(sheet), source: 'page', reason: error.detail?.cloud ?? null, at: new Date().toISOString(), shortened: null };
+      s.report = { text: fallbackReport(sheet), counts, source: 'page', reason: error.detail?.cloud ?? null, at: new Date().toISOString(), shortened: null };
       persistNow();
     } else {
       state.report.problem = explain(error);
