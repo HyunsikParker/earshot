@@ -377,7 +377,7 @@ function canShowRecorded(study) {
 }
 
 const RECORDED_CHOICE = `<button class="btn" type="button" data-action="recorded">Show labels recorded on another computer</button>
-    <p class="hint">Recorded labels need no download. Or start reading and pause after a few answers; the report uses what was counted so far. A full read of the ${SAMPLE_SIZE} answers took about 15 minutes on an M4 Mac laptop.</p>`;
+    <p class="hint">Recorded labels need no download. Or start reading and pause after a few answers; the report uses what was counted so far. A full read of the ${SAMPLE_SIZE} answers took about 15 minutes on our test computer.</p>`;
 
 function renderProgress() {
   const s = state.study;
@@ -533,12 +533,22 @@ function reportSource(r) {
   return r.shortened ? `${line} Shortened ${place(r.shortened)}.` : line;
 }
 
+const QUOTE_MAX = 120;
+
+/** Cuts a long flagged statement at a word boundary so the check stays one readable line. */
+function quoted(statement) {
+  if (statement.length <= QUOTE_MAX) return statement;
+  const head = statement.slice(0, QUOTE_MAX + 1);
+  const space = head.search(/\s\S*$/);
+  return `${(space > 0 ? head.slice(0, space) : head.slice(0, QUOTE_MAX)).replace(/[\s,;:]+$/, '')}…`;
+}
+
 function reportCheck(r, study) {
   const statements = [...new Set(findReportIssues(r.text, r.counts ?? buildOutbound(study)).map(({ statement }) => statement))];
   const basis = r.counts ? 'the report tally' : 'the current tally';
   const more = statements.length > 1 ? ` (${statements.length - 1} more flagged)` : '';
   const line = statements.length
-    ? `Count check: “${statements[0]}” is not supported by ${basis}${more}.`
+    ? `Count check: “${quoted(statements[0])}” is not supported by ${basis}${more}.`
     : `Count check: Every number matched ${basis}.`;
   return `<p class="report__check${statements.length ? ' report__check--flagged' : ''}" role="status">${esc(line)}</p>`;
 }

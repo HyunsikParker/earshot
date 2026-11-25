@@ -1,0 +1,120 @@
+{
+  "source": "Report written in the cloud on 2026-11-25 from the recorded labels of the sample study. `sheet` is the tally sheet exactly as it was sent in the request prompt; `report` is the report text the page kept.",
+  "sheet": {
+    "question": "What should we change next year?",
+    "about": "Post-event survey for a two-day developer conference.",
+    "themes": [
+      {
+        "name": "Schedule",
+        "definition": "Timing of sessions, overlaps between talks, length of breaks, length of the day."
+      },
+      {
+        "name": "Content",
+        "definition": "Quality, depth and choice of talks, workshops, topics and speakers."
+      },
+      {
+        "name": "Venue",
+        "definition": "The building and rooms: seating, temperature, Wi-Fi, location, getting around."
+      },
+      {
+        "name": "Food",
+        "definition": "Catering, coffee, dietary options."
+      },
+      {
+        "name": "Networking",
+        "definition": "Meeting other attendees, social events, the hallway track."
+      },
+      {
+        "name": "Organization",
+        "definition": "Registration, communication from organisers, signage, staff, the conference app."
+      }
+    ],
+    "answers_received": 64,
+    "answers_read": 64,
+    "tallies": [
+      {
+        "theme": "Schedule",
+        "answers": 12,
+        "positive": 2,
+        "negative": 9,
+        "mixed": 1,
+        "neutral": 0
+      },
+      {
+        "theme": "Content",
+        "answers": 15,
+        "positive": 3,
+        "negative": 11,
+        "mixed": 0,
+        "neutral": 1
+      },
+      {
+        "theme": "Venue",
+        "answers": 13,
+        "positive": 1,
+        "negative": 12,
+        "mixed": 0,
+        "neutral": 0
+      },
+      {
+        "theme": "Food",
+        "answers": 7,
+        "positive": 3,
+        "negative": 4,
+        "mixed": 0,
+        "neutral": 0
+      },
+      {
+        "theme": "Networking",
+        "answers": 10,
+        "positive": 5,
+        "negative": 4,
+        "mixed": 1,
+        "neutral": 0
+      },
+      {
+        "theme": "Organization",
+        "answers": 16,
+        "positive": 5,
+        "negative": 10,
+        "mixed": 0,
+        "neutral": 1
+      }
+    ],
+    "answers_with_no_theme": 2,
+    "safety_reports": 4,
+    "overall_tone": {
+      "positive": 18,
+      "negative": 43,
+      "mixed": 1,
+      "neutral": 2
+    },
+    "by_group": [
+      {
+        "group": "First-time",
+        "answers": 32,
+        "themes": {
+          "Schedule": 5,
+          "Content": 3,
+          "Venue": 9,
+          "Food": 4,
+          "Networking": 9,
+          "Organization": 8
+        }
+      },
+      {
+        "group": "Returning",
+        "answers": 32,
+        "themes": {
+          "Schedule": 7,
+          "Content": 12,
+          "Venue": 4,
+          "Food": 3,
+          "Networking": "fewer than 3",
+          "Organization": 8
+        }
+      }
+    ]
+  },
+  "report": "## What people talked about most\nRespondents shared feedback across six main themes:\n* Organization: 16 answers\n* Content: 15 answers\n* Venue: 13 answers\n* Schedule: 12 answers\n* Networking: 10 answers\n* Food: 7 answers\n\nFirst-time attendees submitted 32 answers, mentioning Venue (9), Networking (9), Organization (8), Schedule (5), Food (4), and Content (3). Returning attendees also submitted 32 answers, focusing on Content (12), Organization (8), Schedule (7), Venue (4), Food (3), and Networking (fewer than 3). 2 answers had no theme.\n\n## What is going well\nOverall tone is leaning positive in 18 instances. Positive sentiment appears across the themes:\n* Organization: 5\n* Networking: 5\n* Content: 3\n* Food: 3\n* Schedule: 2\n* Venue: 1\n\nAdditionally, 2 answers were neutral and 1 was mixed.\n\n## What to fix first\nThe overall tone shows 43 negative responses. Negative sentiment by theme includes:\n* Venue: 12\n* Content: 11\n* Organization: 10\n* Schedule: 9\n* Networking: 4\n* Food: 4\n\nMixed sentiment was recorded for Schedule (1) and Networking (1). Neutral sentiment was noted for Content (1) and Organization (1).\n\n## Safety reports\nThere were 4 safety reports. The survey owner should read those answers personally and follow up.\n\n## Questions for next time\nOut of 64 answers received and 64 read, what specific adjustments should be prioritized for the next two-day developer conference based on the heavy negative feedback in Venue, Content, and Organization?"
+}

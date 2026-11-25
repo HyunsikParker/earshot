@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { sheetFacts, fallbackReport, findUnsupported, parsePicks, pickPrompt, pickSchema, LEAD_MAX } from '../src/study/facts.js';
+import { findReportIssues, reportPrompt } from '../src/study/report.js';
 import { copiedName, gistAllowed } from '../src/study/guard.js';
+import CLOUD_REPORT from './fixtures/cloud-report-2026-11-25.json';
 import { createRouter } from '../src/ai/router.js';
 import { aiError, fakeEnv, fakeSdk, MODELS } from './helpers/fakes.js';
 
@@ -169,6 +171,61 @@ describe('checking any report text against the sheet', () => {
     expect(findUnsupported('Venue got twice as many complaints as Food.', SHEET)[0].reason).toBe('a comparison that cannot be checked against the sheet');
     expect(findUnsupported('One theme came up most often.', SHEET)[0].reason).toContain('any theme named here');
     expect(findUnsupported('Schedule had the most negative answers.', SHEET)).toHaveLength(1);
+  });
+
+  it('reads a withheld cell as the sheet wrote it for the group and theme named', () => {
+    expect(findUnsupported('Returning attendees mentioned Content (11), Organization (7) and Networking (fewer than 3).', SHEET)).toEqual([]);
+    expect(findUnsupported('In the "First-time" group, Content came up in fewer than 3 answers.', SHEET)).toEqual([]);
+    for (const statement of [
+      'In the "Returning" group, Content came up in fewer than 3 answers.', // that cell is 11
+      'Networking came up in fewer than 3 answers.', // no group named
+      'Returning attendees: Networking (fewer than 4).', // not the sheet's wording
+      'Returning attendees mentioned Networking (fewer than 3), and fewer of them mentioned Venue.',
+    ]) expect(findUnsupported(statement, SHEET)).toEqual([{ statement, reason: 'a comparison that cannot be checked against the sheet' }]);
+  });
+
+  it('accepts the safety follow-up the report prompt asks for, but no other advice', () => {
+    expect(reportPrompt(SHEET)).toContain('the survey owner should read those answers personally and follow up');
+    for (const statement of [
+      'The survey owner should read those answers personally and follow up.',
+      'The survey owner should read these answers personally and follow-up.',
+      'Read all 3 answers personally and follow up.',
+    ]) expect(findUnsupported(statement, SHEET)).toEqual([]);
+    const advice = 'an interpretation that counts alone cannot support';
+    for (const statement of [
+      'The survey owner should read those answers personally and follow up, then fix the Venue first.',
+      'The survey owner should read those answers personally and follow up with the speakers.',
+      'The survey owner should follow up with the venue staff.',
+    ]) expect(findUnsupported(statement, SHEET)).toEqual([{ statement, reason: advice }]);
+    // Without safety reports the prompt asks for no follow-up, and numbers in it are still checked.
+    expect(findUnsupported('The survey owner should read those answers personally and follow up.', { ...SHEET, safety_reports: 0 })[0].reason).toBe(advice);
+    expect(findUnsupported('Read all 5 answers personally and follow up.', SHEET)[0].reason).toBe('"5" is not in the sheet');
+  });
+
+  it('checks how many themes or groups a statement says there are', () => {
+    for (const statement of [
+      'Respondents shared feedback across six main themes:',
+      'Answers covered 6 themes.',
+      'Respondents named six key themes, six distinct themes and six different themes.',
+      'Answers came from two groups.',
+      'Of the six themes, Organization came up most often.',
+    ]) expect(findUnsupported(statement, SHEET)).toEqual([]);
+    const statement = 'Respondents shared feedback across seven main themes:';
+    expect(findUnsupported(statement, SHEET)).toEqual([{ statement, reason: 'the sheet has 6 themes, not seven' }]);
+    expect(findUnsupported('5 themes came up.', SHEET)[0].reason).toBe('the sheet has 6 themes, not 5');
+    expect(findUnsupported('Answers came from three groups.', SHEET)[0].reason).toBe('the sheet has 2 groups, not three');
+    expect(findUnsupported('Answers came from two groups.', { ...SHEET, by_group: undefined })[0].reason).toBe('the sheet has no groups, not two');
+    // Other uses of "main" are still comparisons, and number words are not read anywhere else.
+    expect(findUnsupported('The main complaint was Food.', SHEET)[0].reason).toBe('a comparison that cannot be checked against the sheet');
+    expect(findUnsupported('The main themes were Venue and Organization.', SHEET)[0].reason).toBe('a comparison that cannot be checked against the sheet');
+    expect(findUnsupported('Post-event survey for a two-day developer conference.', SHEET)).toEqual([]);
+  });
+
+  it('flags only the advice in the cloud report of 2026-11-25', () => {
+    const problems = findReportIssues(CLOUD_REPORT.report, CLOUD_REPORT.sheet);
+    expect(problems).toHaveLength(1);
+    expect(problems[0].statement).toMatch(/^Out of 64 answers received and 64 read, what specific adjustments should be prioritized .* Venue, Content, and Organization\?$/);
+    expect(problems[0].reason).toBe('an interpretation that counts alone cannot support');
   });
 });
 

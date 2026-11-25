@@ -93,7 +93,7 @@ In desktop Chrome, choose **Open the sample study**, then pick one of these path
 
 1. **See a finished run without a download.** Choose **Show labels recorded on another computer**. It is available before reading starts, even if Chrome says the local model has not finished downloading. The page marks the labels as recorded.
 2. **Read a few answers.** Choose **Start reading**, then **Pause** after a few answers. If the local model is not ready, Chrome needs to download it first. You can write a report from the answers counted so far.
-3. **Read all 64 answers.** Choose **Start reading** and let it finish. A full local read took about 15 minutes on an M4 Mac laptop, not including the model download.
+3. **Read all 64 answers.** Choose **Start reading** and let it finish. A full local read took about 15 minutes on an M4 Mac mini with 32 GB of memory, not including the model download.
 
 In the report pane, open **See the exact text** to review the tally sheet, then choose **Send the counts and write the report**. **Where each step ran** distinguishes recorded labels, local reading and cloud writing.
 

@@ -5,6 +5,7 @@ import { getSdk } from '../src/ai/firebase.js';
 import { sampleStudy } from '../src/sample/conference.js';
 import { loadStudy, saveStudy } from '../src/store.js';
 import { aiError, fakeSdk } from './helpers/fakes.js';
+import CLOUD_REPORT from './fixtures/cloud-report-2026-11-25.json';
 
 vi.mock('../src/ai/firebase.js', () => ({ getSdk: vi.fn() }));
 
@@ -163,4 +164,12 @@ it('checks restored reports against their original counts, falling back to the c
   };
   await boot({ study });
   expect(document.querySelector('.report__check').textContent).toContain('Every number matched the report tally.');
+});
+
+it('quotes a long flagged statement only up to a word boundary', async () => {
+  const study = { ...sampleStudy(), started: true, report: { text: CLOUD_REPORT.report, source: 'in_cloud', counts: CLOUD_REPORT.sheet } };
+  await boot({ study });
+  expect(document.querySelector('.report__check').textContent).toBe(
+    'Count check: “Out of 64 answers received and 64 read, what specific adjustments should be prioritized for the next two-day developer…” is not supported by the report tally.',
+  );
 });

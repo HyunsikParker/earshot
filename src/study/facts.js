@@ -123,11 +123,20 @@ const RANK_CLAIMS = [
 const UNCHECKABLE = /\b(?:most|least|fewest|best|worst|biggest|largest|smallest|highest|lowest|top|main|primary|majority|minority|more|less|fewer|half|twice|double|second|third)\b/i;
 const INTERPRETATION = /\b(?:should|must|needs? to|ought|recommend\w*|because|due to|caus\w+|suggest\w*|indicat\w+|likely|probably|concerns?|working well|going well|address\w*|improv\w+|fix\w*|requires?|follow[- ]up|priorit\w+)\b/i;
 
+// "six main themes", "2 groups": how many themes or groups the sheet has. Number
+// words are read only here.
+const NUMBER_WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
+const HOW_MANY = new RegExp(`(?<![\\p{L}\\p{N}.])(\\d+|${NUMBER_WORDS.join('|')})\\s+(?:(?:main|key|distinct|different)\\s+)?(themes|groups)(?![\\p{L}\\p{N}])`, 'giu');
+// What `reportPrompt` asks for under "Safety reports": the survey owner should
+// read those answers personally and follow up. That advice is the prompt's.
+const SAFETY_FOLLOW_UP = /(?:\b(?:should|must|needs? to)\s+)?(?:personally\s+)?\b(?:read|review)\s+(?:all\s+(?:of\s+)?)?(?:(?:those|these|the)\s+)?(?:\d+\s+)?(?:safety\s+)?(?:answers|reports|responses)(?:\s+personally)?\s+and\s+follow[- ]?up(?:\s+on\s+them)?(?=\s*(?:[.!?;:,)]|$))/gi;
+
 /**
  * Lists the statements in `text` that the tally sheet does not support: a
  * number that is not a count for the theme or group named with it, a ranking
- * the counts do not show, a comparison that cannot be checked, or advice and
- * explanation, which counts alone cannot justify.
+ * the counts do not show, a wrong number of themes or groups, a comparison that
+ * cannot be checked, or advice and explanation, which counts alone cannot
+ * justify. The safety follow-up that the report prompt asks for is not advice.
  * @returns {{statement: string, reason: string}[]}
  */
 export function findUnsupported(text, sheet) {
@@ -149,6 +158,22 @@ export function findUnsupported(text, sheet) {
 
     let rest = statement;
     for (const name of [...named.map((t) => t.theme), ...inGroups.map((g) => g.group)]) rest = rest.replace(nameRx(name, 'giu'), ' ');
+
+    // A withheld cell, quoted for a group and theme the statement names, is the
+    // sheet's own wording ("fewer than 3"), not a comparison.
+    for (const g of inGroups) {
+      for (const t of named) {
+        const cell = g.themes[t.theme];
+        if (typeof cell === 'string' && /^fewer than \d+$/.test(cell)) rest = rest.replace(nameRx(cell, 'giu'), ' ');
+      }
+    }
+    rest = rest.replace(HOW_MANY, (_, said, kind) => {
+      const stated = /^\d+$/.test(said) ? Number(said) : NUMBER_WORDS.indexOf(said.toLowerCase()) + 1;
+      const noun = kind.toLowerCase();
+      const actual = noun === 'themes' ? themes.length : groups.length;
+      if (stated !== actual) why(`the sheet has ${actual || 'no'} ${actual === 1 ? noun.slice(0, -1) : noun}, not ${said.toLowerCase()}`);
+      return ' ';
+    });
 
     const allowed = new Set(everywhere);
     for (const t of named) for (const key of ['answers', ...TONES]) allowed.add(t[key]);
@@ -173,6 +198,7 @@ export function findUnsupported(text, sheet) {
       }
     }
     if (UNCHECKABLE.test(rest)) why('a comparison that cannot be checked against the sheet');
+    if (sheet.safety_reports > 0) rest = rest.replace(SAFETY_FOLLOW_UP, ' ');
     if (INTERPRETATION.test(rest)) why('an interpretation that counts alone cannot support');
   }
   return problems;
