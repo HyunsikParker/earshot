@@ -165,7 +165,7 @@ function renderStart() {
     <section class="start">
       <div>
         <h1 tabindex="-1">Read every answer. Repeat none of them.</h1>
-        <p class="start__lede">Earshot sorts the open-ended answers from a survey you promised to keep confidential. They are read on this computer. The cloud gets only the counts and writes the report from them.</p>
+        <p class="start__lede">Earshot sorts the open-ended answers from a survey you promised to keep confidential. They are read on this computer. The cloud writes the report from a tally sheet that you can read before it is sent.</p>
         <div class="crossing">
           <div class="crossing__side">
             <h2>Stays on this computer</h2>

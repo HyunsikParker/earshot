@@ -1,6 +1,6 @@
-// Tally marks: four uprights and a diagonal for every five. The counts are the
-// only thing that leaves the computer, so they are drawn the way a person
-// counting slips by hand would draw them.
+// Tally marks: four uprights and a diagonal for every five. The counts go to
+// the cloud in the tally sheet, so they are drawn the way a person counting
+// slips by hand would draw them.
 import { esc } from './dom.js';
 
 const UPRIGHTS = [

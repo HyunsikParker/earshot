@@ -1,7 +1,7 @@
 {
   "name": "earshot",
   "version": "0.1.0",
-  "description": "Sorts confidential open-ended survey answers on your own computer with Gemini Nano; only the counts go to the cloud.",
+  "description": "Sorts confidential open-ended survey answers on your own computer with Gemini Nano; the cloud writes the report from a tally sheet that you can read before it is sent.",
   "scripts": {
     "build": "vite build",
     "build:local": "vite build --mode development --outDir dist-local",

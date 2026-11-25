@@ -1,4 +1,4 @@
-// Builds the one thing the cloud is ever given: the tally sheet.
+// Builds what the cloud is given for the report: the tally sheet.
 import { tally } from './aggregate.js';
 import { assertNoVerbatim, gistAllowed } from './guard.js';
 

@@ -1,5 +1,5 @@
-// Counts. This is the only form in which answers contribute to anything that
-// leaves the computer.
+// Counts. Apart from gists the analyst approves, this is the only form in which
+// answers contribute to the tally sheet sent for the report.
 
 export const SENTIMENTS = ['positive', 'negative', 'mixed', 'neutral'];
 export const SMALL_CELL = 3; // counts below this are not reported per group
